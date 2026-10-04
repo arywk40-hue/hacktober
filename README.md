@@ -12,7 +12,7 @@ Open-weight models make the app work: **Gemma** drafts explanations and question
 | Ollama | Run all three models locally |
 | FastAPI, PyMuPDF, SQLite | Serve the UI, extract PDF text and store local study material |
 
-**Technology category target: Best Use of Gemma.** Gemma powers both generation paths; its installed model tag appears in `/api/health` and the live evaluation report. The [current category rules](https://dev.to/challenges/hacktoberfest-weekend-2026-10-01) include running Gemma locally. This technology fit does not establish overall challenge eligibility or guarantee a prize. Sentry, Entire, ElevenLabs and the other featured partner services are not integrated.
+**Technology category target: Best Use of Gemma.** Gemma powers both generation paths; its installed model tag appears in `/api/health` and the live evaluation report. The [current category rules](https://dev.to/challenges/hacktoberfest-weekend-2026-10-01) include running Gemma locally. Optional **Sentry Agent Tracing** is implemented for timing, tokens, retries and rejections; its partner-category demonstration still needs confirmed live traces. This technology fit does not establish overall challenge eligibility or guarantee a prize. Entire and ElevenLabs are not integrated.
 
 ## Setup
 
@@ -64,7 +64,7 @@ PDF pages → overlapping chunks with document/page identity → local embedding
 
 ## Why open-source AI
 
-- **Offline:** after dependency/model setup, retrieval, generation and verification need only SQLite and loopback Ollama requests. The UI has no CDN, remote fonts or telemetry.
+- **Offline:** after dependency/model setup, retrieval, generation and verification need only SQLite and loopback Ollama requests. The UI has no CDN or remote fonts. Optional Sentry tracing is disabled by default; leave its DSN blank for fully offline operation.
 - **Private:** PDFs, extracted text, embeddings, answers and verifier audits stay under local `data/`.
 - **No paid inference API:** there are no tokens billed by a cloud provider. Hardware, storage and electricity still have costs.
 - **Swappable:** generator, verifier and embedding tags are configurable. Ollama metadata must confirm distinct generator/verifier families and local weights. Changing the embedding model requires deleting and re-uploading documents to rebuild the embedding space.
@@ -78,6 +78,26 @@ Defaults work without `.env`. To customise, copy `.env.example` to `.env` and ed
 
 Gemma 3 4B and Qwen 2.5 3B are the defaults after the smaller generator/verifier proved unreliable in our traces. Local model calls are serialised and weights unload after each call to limit RAM use. Requests can take time on laptops; the UI shows retrieval/verification progress. Only one study operation runs at a time; a concurrent operation gets a visible retry message.
 
+## Optional Sentry Agent Tracing
+
+Create a Python/FastAPI project in [Sentry](https://sentry.io/), copy its project DSN to `.env` as
+`CITETUTOR_SENTRY_DSN`, and restart `./run.sh`. See the [step-by-step setup and demo](docs/SENTRY.md).
+Tracing records retrieval, Ollama generation/verification calls, token counts reported by Ollama,
+tutor attempts/refusals and quiz rejection counts/codes. These metadata leave the laptop when enabled.
+Document text, filenames, source IDs, prompts, answers and verifier reasons are excluded by an outgoing
+allowlist; automatic error/log/body capture is disabled. All model inference stays local. Failed telemetry
+does not block study requests.
+
+```sh
+# Real models; save sanitized SDK envelopes locally, without a Sentry account or network telemetry:
+uv run --offline python -m scripts.trace_demo --preview
+# After configuring your Sentry DSN, generate traces and verify them in the Sentry UI:
+uv run --offline python -m scripts.trace_demo
+```
+
+The demo uses only `eval/sample.pdf` in a temporary library. Local previews and tests demonstrate
+instrumentation; a live Sentry trace screenshot is still required as submission evidence.
+
 ## Tests and evaluation
 
 ```sh
@@ -87,7 +107,7 @@ node --check study/static/app.js
 uv run --offline python -m scripts.evaluate
 ```
 
-The **34 contract tests** cover chunk/page preservation, citation parsing, document scope, atomic indexing failures, bounded retries, guarded verification, blind solving, fabricated quotes, model-family enforcement and local-only configuration. Test doubles validate boundaries; they do not establish model accuracy.
+The **40 contract tests** cover chunk/page preservation, citation parsing, document scope, atomic indexing failures, bounded retries, guarded verification, blind solving, fabricated quotes, model-family enforcement, local-only configuration and Sentry privacy/transport boundaries. Test doubles validate boundaries; they do not establish model accuracy.
 
 The evaluation runs **10 questions against real local models**: seven supported mechanics questions and three out-of-scope questions. It also generates a two-question mixed quiz. It reports gold-pattern answer correctness, in-scope success/refusal rates, citation accuracy against expected document/pages, out-of-scope refusal rate, quiz rejection counts, latency and token counts. See [eval/README.md](eval/README.md). Gold regex checks are a transparent heuristic; inspect the complete responses and source pages.
 

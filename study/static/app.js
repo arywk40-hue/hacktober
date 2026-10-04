@@ -210,6 +210,9 @@ $('#quiz-results').addEventListener('submit', event => {
 });
 async function health() {
   const response = await api('/health');
+  const tracingOn = response.tracing?.status === 'enabled';
+  $('.privacy-label').textContent = tracingOn ? '◉ Local AI · Sentry metadata' : '◉ Local & private';
+  $('.privacy-label').title = tracingOn ? 'Sentry receives timings, token counts and rejection codes. Notes and answers stay local.' : 'Models and documents stay local. Sentry tracing is off.';
   $('#model-status').textContent = response.models.ready ? 'All models ready' : 'Setup needed';
   $('#models').innerHTML = Object.entries(response.models.roles).map(([role, model]) => `<p><span>${esc(role)}</span><code>${esc(model.model)}</code><span>${model.ready ? 'Ready' : esc(model.error)}</span></p>`).join('');
 }

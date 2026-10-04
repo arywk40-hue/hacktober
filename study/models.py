@@ -8,6 +8,8 @@ import time
 import httpx
 from pydantic import ValidationError
 
+from study.tracing import model_metadata, record, traced
+
 
 class ModelError(RuntimeError):
     pass
@@ -77,7 +79,9 @@ class Models:
                 roles[role] = {"model": tag, "ready": False, "error": str(exc)}
         return {"ready": all(r["ready"] for r in roles.values()), "roles": roles, "local_only": True}
 
+    @traced("gen_ai.chat", "Ollama structured output")
     def structured(self, role, schema, instruction, context):
+        model_metadata(role, self.roles.get(role, ""), schema.__name__)
         self._check_role(role)
         body = {"model": self.roles[role], "stream": False, "keep_alive": 0,
                 "format": schema.model_json_schema(),
@@ -94,6 +98,8 @@ class Models:
                 response = self.client.post("api/chat", json=body)
             response.raise_for_status()
             data = response.json()
+            record(**{"gen_ai.usage.input_tokens": data.get("prompt_eval_count"),
+                      "gen_ai.usage.output_tokens": data.get("eval_count")})
             self.calls.append({"role": role, "schema": schema.__name__, "model": self.roles[role],
                                "seconds": round(time.monotonic() - start, 3),
                                "input_tokens": data.get("prompt_eval_count", 0),
@@ -105,7 +111,10 @@ class Models:
         except (ValidationError, ValueError, KeyError, TypeError) as exc:
             raise StructuredOutputError(f"{role} returned invalid structured output") from exc
 
+    @traced("gen_ai.embeddings", "Ollama embeddings")
     def embed(self, texts, *, query=False):
+        model_metadata("embedding", self.roles["embedding"])
+        record(**{"citetutor.input_count": len(texts)})
         self._check_role("embedding")
         if not texts:
             return []
@@ -116,7 +125,9 @@ class Models:
                 response = self.client.post("api/embed", json={"model": self.roles["embedding"],
                                            "input": texts, "truncate": False, "keep_alive": 0})
             response.raise_for_status()
-            vectors = response.json()["embeddings"]
+            data = response.json()
+            record(**{"gen_ai.usage.input_tokens": data.get("prompt_eval_count")})
+            vectors = data["embeddings"]
             if len(vectors) != len(texts) or any(
                 not v or len(v) != len(vectors[0]) or not all(math.isfinite(x) for x in v) or not any(v)
                 for v in vectors

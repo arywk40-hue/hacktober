@@ -4,6 +4,7 @@ import re
 from collections import Counter
 
 from study.models import ModelError
+from study.tracing import record, traced
 
 
 def terms(text):
@@ -48,10 +49,13 @@ def retrieve(units, query, vector, count=8):
     return fuse(units, [lexical_ranking(units, query)[:40], dense[:40]], count)
 
 
+@traced("gen_ai.execute_tool", "Hybrid retrieval")
 def retrieve_evidence(units, query, model_client, settings):
     if not units:
         return []
     if any(u["embedding_model"] != model_client.roles["embedding"] for u in units):
         raise ModelError("Embedding model changed. Re-upload documents to rebuild their local index.")
     vector = model_client.embed([query], query=True)[0]
-    return retrieve(units, query, vector, settings.retrieval_top_k)
+    result = retrieve(units, query, vector, settings.retrieval_top_k)
+    record(**{"citetutor.retrieved_count": len(result)})
+    return result

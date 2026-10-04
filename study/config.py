@@ -1,7 +1,7 @@
 from pathlib import Path
 from urllib.parse import urlparse
 
-from pydantic import Field, model_validator
+from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     model_timeout: float = Field(default=240, gt=0)
     retrieval_top_k: int = Field(default=4, ge=1, le=8)
     max_upload_mb: int = Field(default=30, ge=1, le=100)
+    sentry_dsn: SecretStr = SecretStr("")
+    sentry_traces_sample_rate: float = Field(default=1.0, ge=0, le=1)
 
     @model_validator(mode="after")
     def local_only(self):

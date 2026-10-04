@@ -23,6 +23,7 @@ from study.db import Database, Record, public
 from study.ingest import ingest_pdf
 from study.models import ModelError, Models
 from study.schemas import ChatRequest, QuizRequest, Schema
+from study.tracing import Tracing, quiz_rejections
 from study.tutor import answer
 
 STATIC = Path(__file__).parent / "static"
@@ -32,11 +33,12 @@ class SubjectRequest(Schema):
     title: str = Field(min_length=1, max_length=120)
 
 
-def create_app(settings=None, model_client=None):
+def create_app(settings=None, model_client=None, tracing_client=None):
     settings = settings or Settings()
     settings.data_dir.mkdir(parents=True, exist_ok=True)
     db = Database(settings.database_url)
     models = model_client or Models(settings)
+    tracing = tracing_client or Tracing(settings)
     operation_lock = threading.Lock()
 
     @contextmanager
@@ -55,9 +57,11 @@ def create_app(settings=None, model_client=None):
         if model_client is None:
             models.close()
         db.engine.dispose()
+        tracing.close()
 
     app = FastAPI(title="CiteTutor", version="0.2.0", lifespan=lifespan)
     app.state.db, app.state.models = db, models
+    app.state.tracing = tracing
     app.mount("/static", StaticFiles(directory=STATIC), name="static")
 
     @app.exception_handler(LookupError)
@@ -83,7 +87,8 @@ def create_app(settings=None, model_client=None):
 
     @app.get("/api/health")
     def health():
-        return {"status": "ok", "models": models.health(), "storage": "SQLite", "processing": "in-process"}
+        return {"status": "ok", "models": models.health(), "storage": "SQLite", "processing": "in-process",
+                "tracing": {"status": tracing.status, "content_capture": False}}
 
     @app.get("/api/subjects")
     def subjects():
@@ -128,13 +133,21 @@ def create_app(settings=None, model_client=None):
 
     @app.post("/api/chat")
     def chat(request: ChatRequest):
-        with study_operation():
-            return answer(db, models, request, settings)
+        with study_operation(), tracing.request("tutor") as span:
+            result = answer(db, models, request, settings)
+            span.set_data("citetutor.outcome", "refused" if result["declined"] else "answered")
+            span.set_data("citetutor.attempts", result["attempts"])
+            return result
 
     @app.post("/api/quizzes")
     def quiz(request: QuizRequest):
-        with study_operation():
-            return generate_quiz(db, models, request, settings)
+        with study_operation(), tracing.request("quiz") as span:
+            result = generate_quiz(db, models, request, settings)
+            span.set_data("citetutor.outcome", "completed")
+            for key in ("requested", "accepted", "rejected"):
+                span.set_data(f"citetutor.{key}", result[key])
+            quiz_rejections(result)
+            return result
 
     return app
 

@@ -47,7 +47,7 @@ On the 8 GB M1 laptop, returned tutor answers had a median latency of about 52 s
 
 ## Why Does Open Innovation Matter?
 
-The open components perform the central work: local embeddings find relevant material, Gemma produces explanations, and another model checks them. After setup, documents and questions stay on the laptop and inference needs no internet or paid API tokens. The UI has no external assets or telemetry.
+The open components perform the central work: local embeddings find relevant material, Gemma produces explanations, and another model checks them. After setup, documents and questions stay on the laptop and inference needs no internet or paid API tokens. The UI has no external assets. Optional Sentry tracing is off by default; when enabled, sanitized timing/token/count metadata leaves the laptop while document and model content stays local.
 
 The models can be swapped and the verification policy can be inspected and changed. That makes the tool easier to adapt to a friend's hardware and study needs. Hardware and electricity still have costs; each model's licence applies.
 
@@ -59,4 +59,6 @@ CiteTutor runs `gemma3:4b` through local Ollama for both central generation task
 
 Evidence of the integration is in `study/tutor.py`, `study/assessment.py`, the model roles returned by `/api/health`, and the actual Gemma calls recorded in `eval/reports/local.json`. The demo should show the installed model tag, one cited answer, and a quiz's verified count and source quote. The measured false refusals and latency remain disclosed in the evaluation section above.
 
-This integration is local inference with downloaded open weights. No Sentry, Entire, ElevenLabs or other featured partner integration is claimed. Prize selection depends on a valid entry and judging; using Gemma alone does not guarantee an award.
+**Sentry Agent Tracing — implemented; live demonstration pending.** Manual AI spans expose the tutor and quiz pipelines, local model latency/token usage, retry/refusal outcomes, and fixed rejection codes. The SDK's automatic integrations are disabled; transactions and envelopes pass an allowlist that excludes all note/model content and attachments. Tests cover three rejected tutor drafts, quiz key disagreement, privacy and failed network transport. The sample trace command uses real local models and can also capture SDK envelopes locally without sending telemetry. See `docs/SENTRY.md` for setup.
+
+Before claiming the Sentry partner category, configure a real project and add a verified trace screenshot/link and actual observations here. No live ingestion is claimed yet. Entire and ElevenLabs are not integrated. Prize selection depends on a valid entry and judging; these integrations do not guarantee an award.

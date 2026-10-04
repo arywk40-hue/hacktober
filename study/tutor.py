@@ -6,6 +6,7 @@ from study.ingest import normalize, source_units
 from study.models import StructuredOutputError
 from study.retrieval import retrieve_evidence
 from study.schemas import Draft, NumericalDraft, Verdict
+from study.tracing import record, rejection
 
 REFUSAL = "Not enough evidence in this document"
 
@@ -52,6 +53,7 @@ def answer(db, models, request, settings=None):
     failures = []
     numerical = request.mode != "hint" and bool(re.search(r"\bvalue\s+and\s+unit\b", request.message, re.I))
     for attempt in range(1, 4):
+        record(**{"citetutor.attempt": attempt})
         try:
             draft = models.structured("generator", NumericalDraft if numerical else Draft,
                 "Answer ALL requested parts using only evidence. If a value and unit are requested, explicitly "
@@ -67,18 +69,22 @@ def answer(db, models, request, settings=None):
                 "Mode explain asks for an explanation, mode hint asks for a helpful hint rather than a solution. "
                 "Explanation style changes wording only and is NEVER factual evidence.", context)
             if not draft.answerable or not draft.segments:
+                rejection("generator_declined", attempt)
                 return refuse(attempt, ["Generator declined to draft a supported answer"])
             failures = []
             if numerical and draft.quantity is None:
+                rejection("missing_quantity", attempt)
                 context["previous_failures"] = ["Include the numerical result and its unit, not just the formula"]
                 continue
             for segment in draft.segments:
                 if (not segment.citations or any(c not in allowed for c in segment.citations)
                         or "[p." in segment.text.casefold()):
+                    rejection("invalid_citation", attempt)
                     failures.append("Use an exact supplied chunk ID; do not write page labels in text")
                     continue
                 cited = [allowed[c] for c in dict.fromkeys(segment.citations)]
                 if numerical and not source_contains_quantity(draft.quantity, cited):
+                    rejection("unsupported_quantity", attempt)
                     failures.append("The result and unit are absent from the cited chunk. Cite the actual "
                                     "worked example or refuse if it is absent.")
                     continue
@@ -95,6 +101,7 @@ def answer(db, models, request, settings=None):
                     {"evidence": evidence_payload(cited), "question": request.message,
                      "answer": segment.text, "mode": request.mode})
                 if not verdict.supported:
+                    rejection("unsupported_answer", attempt)
                     failures.append(verdict.reason)
             if not failures:
                 checked = [{"text": s.text, "citations": [citation(allowed[c])
@@ -109,6 +116,7 @@ def answer(db, models, request, settings=None):
                            {"question": request.message, "result": result})
                 return result
         except StructuredOutputError:
+            rejection("invalid_schema", attempt)
             failures = ["Invalid structured draft or verification output"]
         context["previous_failures"] = failures
     return refuse(3, ["No complete, independently supported draft passed after three attempts"])

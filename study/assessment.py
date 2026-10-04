@@ -6,9 +6,11 @@ from study.ingest import normalize, source_units
 from study.models import StructuredOutputError
 from study.retrieval import retrieve_evidence
 from study.schemas import MCQQuestion, ShortQuestion, Solve, Verdict
+from study.tracing import traced
 from study.tutor import citation, evidence_payload
 
 
+@traced("gen_ai.execute_tool", "Blind solve and support check")
 def verify_candidate(models, question, supplied_units, retrieved):
     allowed = {u["id"]: u for u in supplied_units}
     if not set(question.source_unit_ids) <= set(allowed):
