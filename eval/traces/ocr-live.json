@@ -1,0 +1,19 @@
+{
+  "purpose": "Live OCR metadata trace generated from a public glassboard photo; image/text stayed local",
+  "source": "https://commons.wikimedia.org/wiki/File:Learning_Physics.jpg",
+  "source_credit": "Preply.com Images / preply.com; CC BY 2.0",
+  "trace_id": "9dd839e0c7304be8b77640221506af80",
+  "dashboard_verified": true,
+  "verification": "Matching trace ID inspected in Sentry Traces and Agents; model and usage attributes visible",
+  "transaction": "CiteTutor ocr",
+  "model": "glm-ocr:q8_0",
+  "model_seconds": 59.069812059,
+  "transaction_seconds_displayed": 59.09,
+  "input_tokens": 4072,
+  "output_tokens": 87,
+  "indexed": false,
+  "content_capture": false,
+  "screenshot_status": "Actual clean-window Agent Activity screenshot captured in chat; PNG not committed",
+  "trace_url": "https://iit-mandi-rp.sentry.io/explore/traces/trace/9dd839e0c7304be8b77640221506af80/?source=agent_monitoring&statsPeriod=24h&tab=ai-spans&timestamp=1791115644.271",
+  "input_panel": "No input for this span"
+}

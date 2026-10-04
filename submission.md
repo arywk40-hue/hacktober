@@ -14,6 +14,8 @@ The question I wanted the app to answer was: can a study helper make its explana
 
 ## Demo
 
+**Video and real screenshots pending.** The [recording guide](https://github.com/arywk40-hue/hacktober/blob/main/docs/DEMO.md) provides a three-minute shot list, narration and exact prompts. Replace this notice with the actual accessible recording URL before publishing. The guide itself is not the video demo.
+
 Run `./run.sh` and open http://127.0.0.1:8000. A local model server does not require publishing a friend's documents.
 
 Demo walkthrough to record:
@@ -22,6 +24,8 @@ Demo walkthrough to record:
 2. Ask for the force on a 2 kg body accelerating at 4 m/s²; show the result and click its citation.
 3. Ask an out-of-scope question and show the explicit refusal.
 4. Generate a two-question practice set over pages 1–3; show verification counts, a source answer and its supporting quote.
+5. Show a publicly shareable scan beside its editable GLM-OCR draft; explain review before indexing.
+6. Show actual Sentry Gemma/Qwen spans and token/latency metadata. Include an OCR trace when captured; images and text never go to Sentry in this integration.
 
 **Before publishing:** attach a real screenshot or recording of the final working flow. Add feedback only after the friend has actually tried it.
 
@@ -66,6 +70,10 @@ Evidence of the integration is in `study/tutor.py`, `study/assessment.py`, the m
 **Sentry Agent Tracing — live integration verified.** Manual AI spans expose the tutor and quiz pipelines, local model latency/token usage, retry/refusal outcomes, and fixed rejection codes. The SDK's automatic integrations are disabled; transactions and envelopes pass an allowlist that excludes all note/model content and attachments. Tests cover three rejected tutor drafts, quiz key disagreement, privacy and failed network transport. The sample trace command uses real local models and can also capture SDK envelopes locally without sending telemetry. See `docs/SENTRY.md` for setup.
 
 Live metadata delivery returned HTTP 200, and the real Gemma/Qwen trace was inspected in Sentry’s Agents view. The verified sample answer has one citation and passed on its first attempt. Its trace (`66ca5eb26d1a46708f0497e55d9757ff`) shows retrieval, embeddings, Gemma generation and Qwen verification; no model input text is present. The sanitized payload/delivery record is in `eval/traces/live-delivery.json`. Save and include the real trace screenshot with this post before publishing. Entire and ElevenLabs are not integrated. Prize selection depends on a valid entry and judging; these integrations do not guarantee an award.
+
+The scan integration also has confirmed live evidence: GLM-OCR trace `9dd839e0c7304be8b77640221506af80` appeared in Traces and Agents after reading a public glassboard photo locally. Its model span shows 59.07 seconds, 4,072 input and 87 output tokens, and **No input for this span**. Only allowed metadata was sent; the image was neither indexed nor uploaded to Sentry. Its verified metadata is in `eval/traces/ocr-live.json`; include the real captured screenshot in the post. Photo credit: [Learning Physics](https://commons.wikimedia.org/wiki/File:Learning_Physics.jpg), Preply.com Images / preply.com, [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/).
+
+Current tutor traces now show the revised pipeline as well. A supported sample request passed on attempt one in 45.73 seconds: Gemma NumericalDraft (24.84 seconds, 1,215 input / 79 output tokens), Qwen blind Solve (9.68 seconds), then support checking (10.80 seconds). A separate outside-worked-evidence request took 1.66 minutes and refused after three rejected drafts; the first rejection code was `unsupported_quantity`. This rejection occurred at the source guard before Qwen. These live traces and their captured screenshots show how generation time accumulates across retries and where the evidence boundary acts. Verified metadata: `eval/traces/current-tutor-live.json`. Export/save the actual screenshots and video before publishing.
 
 The real-model local trace preview (`eval/traces/local-preview.json`) caught three `unsupported_quantity` drafts before refusal: a requested result was absent from the cited source. The guard rejected them before Qwen was called. The span metadata shows the cost of retrying on this laptop: that refusal took 465 seconds, compared with 141 seconds for the supported answer on its first attempt. The two-question quiz took 299 seconds, accepted both candidates, and shows separate blind-solve and support-verdict calls. This is local SDK instrumentation evidence, not a live Sentry dashboard capture or a benchmark of tracing overhead.
 

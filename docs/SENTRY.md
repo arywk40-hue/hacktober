@@ -42,6 +42,8 @@ and `CiteTutor quiz` (or search a printed trace ID). Capture the span waterfall 
 
 The scan-review endpoint also emits `CiteTutor ocr` with an `Ollama page transcription` span and reported token/timing metadata. Its image, base64 payload and draft text are excluded. OCR privacy is covered by SDK-envelope tests; the live trace evidence below predates scan support and tutor blind reading.
 
+For the submission, follow [the recording/evidence guide](DEMO.md). `scripts.trace_demo --case tutor`, `--case quiz`, or `--case ocr --ocr-image /path/to/public-image.jpg` isolates each stage; add `--preview` to save metadata locally without network telemetry. The OCR rehearsal never indexes or approves the image, and prints no recognized text.
+
 The integration uses [Sentry's manual tracing API](https://getsentry.github.io/sentry-python/api.html)
 and [AI attribute conventions](https://getsentry.github.io/sentry-conventions/attributes/gen_ai/).
 Token attributes are recorded only when Ollama supplies counts; embedding output tokens are not invented.
@@ -66,6 +68,10 @@ The sanitized payload and HTTP delivery record are in
 [eval/traces/live-delivery.json](../eval/traces/live-delivery.json). A real Agents timeline screenshot
 was captured during setup; save/include that screen in the DEV post. The trace link requires your
 Sentry account, so a screenshot is useful for judges who cannot access your project.
+
+A newer scan-role trace was verified in both Traces and Agents: `9dd839e0c7304be8b77640221506af80`, using the credited public glassboard photo locally. GLM-OCR took 59.07 seconds with 4,072 input and 87 output tokens; root duration was 59.09 seconds. The inspected Agent Activity input panel says **No input for this span**. A clean-window dashboard screenshot was captured in chat; no PNG file is committed yet. See [the verified OCR metadata](../eval/traces/ocr-live.json) and the separate [local SDK preview](../eval/traces/ocr-preview.json).
+
+The revised tutor was subsequently inspected live too: trace `08998f10d6f341e9a9a95454c5de60ba` shows retrieval, embeddings, Gemma NumericalDraft, Qwen blind Solve and support checking, with a 45.73-second root and first-attempt answer. Trace `e67e9be1c0db41d2b5fba5d2f9e24ae6` shows three rejected drafts before refusal, with the first code `unsupported_quantity`; source guards blocked it before Qwen. Actual clean-window screenshots of both were captured in chat. Timings, counts and account-gated links are preserved in [current-tutor-live.json](../eval/traces/current-tutor-live.json). These traces use the authored mechanics fixture, not private college notes.
 
 The onboarding page's **Waiting for error** is independent of AI trace ingestion. This integration
 intentionally drops error-event bodies and verifies tracing through Agents rather than injecting

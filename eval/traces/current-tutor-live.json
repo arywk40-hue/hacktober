@@ -1,0 +1,53 @@
+{
+  "purpose": "Current real-model sample-PDF tracing rehearsal; metadata only",
+  "source": "Original authored eval/sample.pdf; isolated temporary library",
+  "models": {
+    "generator": "gemma3:4b",
+    "verifier": "qwen2.5:3b",
+    "embedding": "nomic-embed-text"
+  },
+  "dashboard_verified": true,
+  "verification": "Both exact trace IDs inspected in Sentry Agents and Trace Details",
+  "supported": {
+    "trace_id": "08998f10d6f341e9a9a95454c5de60ba",
+    "declined": false,
+    "attempts": 1,
+    "root_seconds_displayed": 45.73,
+    "generator": {
+      "schema": "NumericalDraft",
+      "model_seconds": 24.837930202,
+      "input_tokens": 1215,
+      "output_tokens": 79
+    },
+    "blind_reading": {
+      "schema": "Solve",
+      "model_seconds": 9.676579952,
+      "input_tokens": 490,
+      "output_tokens": 78
+    },
+    "support_check": {
+      "model_seconds_displayed": 10.8,
+      "total_tokens_displayed": 633
+    },
+    "input_panel": "No input for this span",
+    "trace_url": "https://iit-mandi-rp.sentry.io/explore/traces/trace/08998f10d6f341e9a9a95454c5de60ba/?source=agent_monitoring&statsPeriod=24h&tab=ai-spans&timestamp=1791116361.891"
+  },
+  "refused": {
+    "trace_id": "e67e9be1c0db41d2b5fba5d2f9e24ae6",
+    "declined": true,
+    "attempts": 3,
+    "root_minutes_displayed": 1.66,
+    "draft_rejections_visible": 3,
+    "first_rejection_code": "unsupported_quantity",
+    "generator_seconds_displayed": [
+      27.07,
+      40.29,
+      31.36
+    ],
+    "verification_stage": "Source guards reject before Qwen; no verifier call shown in this refusal",
+    "trace_url": "https://iit-mandi-rp.sentry.io/explore/traces/trace/e67e9be1c0db41d2b5fba5d2f9e24ae6/?source=agent_monitoring&statsPeriod=24h&tab=ai-spans&timestamp=1791116407.662"
+  },
+  "screenshot_status": "Actual clean-window Gemma/privacy and three-draft rejection screenshots captured in chat; PNGs not committed",
+  "cost_note": "Sentry estimated cost is not measured laptop hardware/electricity cost",
+  "status": "Completed; both current traces verified live"
+}

@@ -15,6 +15,8 @@ Open-weight models make the app work: **Gemma** drafts explanations and question
 
 **Technology category target: Best Use of Gemma.** Gemma powers both generation paths; its installed model tag appears in `/api/health` and the live evaluation report. The [current category rules](https://dev.to/challenges/hacktoberfest-weekend-2026-10-01) include running Gemma locally. Optional **Sentry Agent Tracing** is implemented for timing, tokens, retries and rejections; live delivery and the Gemma/Qwen spans have been confirmed in Sentry’s Agents view. This technology fit does not establish overall challenge eligibility or guarantee a prize. Entire and ElevenLabs are not integrated.
 
+For the submission recording, use the [three-minute shot list, narration and evidence guide](docs/DEMO.md). It distinguishes local image transcription from Gemma tutoring and Sentry metadata, and lists the real screenshots still needed.
+
 ## Setup
 
 Requirements: Python **3.11–3.13**, [uv](https://docs.astral.sh/uv/), and a current [Ollama](https://ollama.com/) (scan path tested with 0.35.1). Install dependencies and pull local weights once while online:
