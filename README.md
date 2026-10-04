@@ -44,9 +44,9 @@ If the Ollama desktop app already runs its server, skip `ollama serve`. These de
 Open **http://127.0.0.1:8000**. The launcher starts local Ollama if needed, verifies the installed weights and distinct model families, and starts the app on loopback. `uv run --offline` prevents dependency downloads at launch. Missing weights produce setup instructions; the app never pulls models automatically.
 
 1. Create a subject, such as Engineering Physics or Design of Algorithms.
-2. Add one or several PDFs with selectable text. Each is extracted and indexed in-process.
+2. Add PDFs. Selectable text is indexed in-process. Handwritten/image-only pages stay pending until review: click **Review scans**, then **Read this page locally** for each page. Compare the draft with its image, correct mistakes, and check each page before **Approve all scans & index**. Remove unreadable lines or leave a page blank to exclude it. For a poor existing text layer, select **Read all pages as scans** at upload.
 3. Open **Study together**. Choose all subject PDFs or one document, then ask a complete question. Explanation style changes wording only.
-4. Click a citation such as **[p. 2] notes.pdf** to read the full extracted page text.
+4. Click a citation such as **[p. 2] notes.pdf** to read the full extracted page text. Reviewed scans also show the original page image.
 5. Open **Practice**. Pick a PDF, an inclusive physical page range, and MCQ/short-answer types. Only verified questions appear; accepted/rejected counts and rejection reasons are shown.
 6. Answer MCQs for exact checking, or compare your short answer with the verified source answer and quote.
 
@@ -75,6 +75,8 @@ Gemma is open-weight. Model and dependency licenses apply; “open-weight” doe
 ## Configuration
 
 Defaults work without `.env`. To customise, copy `.env.example` to `.env` and edit `CITETUTOR_GENERATOR_MODEL`, `CITETUTOR_VERIFIER_MODEL`, or `CITETUTOR_EMBEDDING_MODEL`. Pull chosen tags explicitly first. `CITETUTOR_OLLAMA_URL` must be an HTTP loopback address; remote endpoints and cloud model tags are rejected.
+
+`CITETUTOR_OCR_MODEL` defaults to the installed `gemma3:4b` vision weights, independently of the tutor generator. OCR requires the model's local `vision` capability. `CITETUTOR_OCR_TIMEOUT` defaults to 600 seconds per page. Drafts are not evidence: the entire document stays out of retrieval until all scanned pages are reviewed. Approval builds its index atomically. The factual verifier checks approved text, not the image; recognition mistakes can survive unless corrected during review.
 
 Gemma 3 4B and Qwen 2.5 3B are the defaults after the smaller generator/verifier proved unreliable in our traces. Local model calls are serialised and weights unload after each call to limit RAM use. Requests can take time on laptops; the UI shows retrieval/verification progress. Only one study operation runs at a time; a concurrent operation gets a visible retry message.
 
@@ -108,7 +110,7 @@ node --check study/static/app.js
 uv run --offline python -m scripts.evaluate
 ```
 
-The **41 contract tests** cover chunk/page preservation, citation parsing, document scope, atomic indexing failures, bounded retries, guarded verification, blind solving, fabricated quotes, model-family enforcement, local-only configuration and Sentry privacy/transport boundaries. Test doubles validate boundaries; they do not establish model accuracy.
+The **52 contract tests** cover chunk/page preservation, citation parsing, document scope, atomic indexing failures, bounded retries, guarded verification, blind solving, fabricated quotes, model-family enforcement, local-only configuration, scan review before retrieval, OCR capability/truncation checks and Sentry privacy/transport boundaries. Test doubles validate boundaries; they do not establish model accuracy.
 
 The evaluation runs **10 questions against real local models**: seven supported mechanics questions and three out-of-scope questions. It also generates a two-question mixed quiz. It reports gold-pattern answer correctness, in-scope success/refusal rates, citation accuracy against expected document/pages, out-of-scope refusal rate, quiz rejection counts, latency and token counts. See [eval/README.md](eval/README.md). Gold regex checks are a transparent heuristic; inspect the complete responses and source pages.
 
@@ -118,7 +120,7 @@ The failed initial baseline is preserved in [eval/reports/baseline.json](eval/re
 
 ## Limits
 
-Text-based PDFs only: no OCR, PPTX, video, auth, adaptive learning or dashboard. PDFs are limited to 30 MB, 300 pages and 1,200 chunks each; split very large textbooks into chapters. Blank/scanned pages are flagged. Extracted diagrams, layout and notation can lose information. Quizzes use at most 20 pages and eight candidates per request and may return fewer questions after rejection. Short-answer practice is self-review. Q&A is stateless; ask complete questions rather than relying on pronouns from earlier turns.
+PDFs are limited to 30 MB, 300 pages, at most 20 scanned pages and 1,200 chunks each; split very large textbooks into chapters. Local scan transcription is an assisted review workflow, not reliable automatic handwriting recognition. Handwriting, diagrams, equations, layout and notation can be omitted or misread; inspect each original page and correct the text. No PPTX, video, auth, adaptive learning or dashboard. Quizzes use at most 20 pages and eight candidates per request and may return fewer questions after rejection. Short-answer practice is self-review. Q&A is stateless; ask complete questions rather than relying on pronouns from earlier turns.
 
 Questions needing synthesis across several chunks may be refused; ask a narrower question. Explicit “value and unit” requests use typed numerical fields and require the result/unit to occur in the cited text, before independent verification. New numerical calculations outside the document's worked results are refused. Verification can miss errors, especially with small models. Inspect the cited evidence. The three-page evaluation is a smoke check, not a claim of measured performance across college subjects. Network disconnection has not been physically tested; application inference is restricted to installed local models and loopback HTTP.
 

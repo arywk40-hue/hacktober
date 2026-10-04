@@ -163,3 +163,11 @@ This log records development before and after the published branch's history cle
 - Text and images stay local. The new OCR role/schema are explicitly allowlisted for metadata-only spans; image bodies and OCR content are excluded. Existing tutor/quiz verification operates only after review.
 - Validation: 52 tests passed, including scan/mixed-page review, page identity, pending retrieval exclusion, incomplete/duplicate/unclear reviews, atomic embedding failure, vision capability enforcement and truncation. Ruff and whitespace checks passed. Rasterized test fixtures cover behavior only; real handwriting accuracy has not yet been measured.
 - Run: `./run.sh`. API scan flow: upload PDF, `GET /api/documents/{id}/review`, `POST /api/documents/{id}/pages/{page}/ocr`, then `POST /api/documents/{id}/review` with version and corrected page text. Test: `uv run --offline python -m pytest -q`.
+
+## 2026-10-04 — Add the scan review screen and test actual notes
+
+- Added a side-by-side original-page image and editable draft, a page selector, local transcription button, explicit page checks and whole-document approval. Pending PDFs have a Review scans action and are excluded from study/practice selectors. Citation dialogs show scan provenance and original images after approval.
+- The author supplied `CS212-Lec10.pdf`: five image-only handwritten pages about matrix-chain multiplication. Uploaded it into the existing local library as pending, zero chunks. Original PDF and raw draft outputs are ignored/private; they are not published as repository fixtures.
+- Inspected the review screen in the real Chrome app and captured its current layout. Page images and controls render without overlap. Existing subjects and PDFs are retained.
+- Gemma 4B first-page OCR failed completeness: only three matrix labels, 10 characters, 116.92 seconds. Page two hit the output limit after 562.66 seconds and was rejected, not indexed. Stopped the remaining Gemma run rather than treating these outputs as useful transcription. Testing Qwen2.5-VL 3B local weights next; no recognition accuracy is claimed yet.
+- Validation: all 52 tests passed; Ruff, JavaScript syntax and whitespace checks passed. Run `./run.sh`, upload the PDF, click Review scans. Test `uv run --offline python -m pytest -q` and `node --check study/static/app.js`.

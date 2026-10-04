@@ -1,7 +1,7 @@
 'use strict';
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-const state = {subject: '', documents: [], busy: false, questions: []};
+const state = {subject: '', documents: [], busy: false, questions: [], review: null};
 function notice(text = '', error = false) {
   $('#notice').textContent = text;
   $('#notice').hidden = !text;
@@ -21,11 +21,11 @@ function requireSubject() {
 }
 function requireDocuments() {
   requireSubject();
-  if (!state.documents.length) throw new Error('Add a PDF to this subject first.');
+  if (!state.documents.some(doc => doc.status === 'ready')) throw new Error('Add a PDF, or review and approve your scanned notes first.');
 }
 function setBusy(value) {
   state.busy = value;
-  for (const element of document.querySelectorAll('#upload-submit, #chat-submit, #quiz-submit, #subject-select, #new-subject, #study-document, #quiz-document, .delete-document')) element.disabled = value;
+  for (const element of document.querySelectorAll('#upload-submit, #chat-submit, #quiz-submit, #subject-select, #new-subject, #study-document, #quiz-document, .delete-document, [data-review], #review-page, #read-page, #review-text, #review-checked, #approve-review')) element.disabled = value;
 }
 async function perform(action) {
   if (state.busy) return;
@@ -57,14 +57,15 @@ async function loadDocuments() {
   $('#document-count').textContent = documents.length;
   $('#page-count').textContent = documents.reduce((sum, doc) => sum + doc.page_count, 0);
   $('#source-total').textContent = documents.length;
-  $('#documents').innerHTML = documents.length ? documents.map(doc => `<article class="document-card"><span class="pdf-icon">PDF</span><div class="document-info"><h3>${esc(doc.title)}</h3><p>${doc.page_count} pages · ${doc.unit_count} source chunks${doc.blank_pages.length ? ` · ${doc.blank_pages.length} page(s) without text` : ''}</p></div><span class="ready-tag">Ready to study</span><button class="delete-document" data-delete="${esc(doc.id)}" aria-label="Remove ${esc(doc.title)}">Remove</button></article>`).join('') : `<div class="empty-state">${state.subject ? 'Your desk is ready. Add a PDF to start studying.' : 'Create a subject to add your first PDF.'}</div>`;
-  const options = documents.map(doc => `<option value="${esc(doc.id)}">${esc(doc.title)}</option>`).join('');
+  $('#documents').innerHTML = documents.length ? documents.map(doc => `<article class="document-card"><span class="pdf-icon">PDF</span><div class="document-info"><h3>${esc(doc.title)}</h3><p>${doc.page_count} pages · ${doc.unit_count} source chunks${doc.status === 'needs_review' ? ` · ${doc.ocr_pages.length} scans to review` : doc.blank_pages.length ? ` · ${doc.blank_pages.length} page(s) excluded` : ''}</p></div>${doc.status === 'needs_review' ? `<button class="secondary" data-review="${esc(doc.id)}">Review scans</button>` : '<span class="ready-tag">Ready to study</span>'}<button class="delete-document" data-delete="${esc(doc.id)}" aria-label="Remove ${esc(doc.title)}">Remove</button></article>`).join('') : `<div class="empty-state">${state.subject ? 'Your desk is ready. Add a PDF to start studying.' : 'Create a subject to add your first PDF.'}</div>`;
+  const ready = documents.filter(doc => doc.status === 'ready');
+  const options = ready.map(doc => `<option value="${esc(doc.id)}">${esc(doc.title)}</option>`).join('');
   const previousStudy = $('#study-document').value;
   const previousQuiz = $('#quiz-document').value;
   $('#study-document').innerHTML = '<option value="">All PDFs in this subject</option>' + options;
-  $('#quiz-document').innerHTML = documents.length ? options : '<option value="">Add a PDF first</option>';
-  if (documents.some(doc => doc.id === previousStudy)) $('#study-document').value = previousStudy;
-  if (documents.some(doc => doc.id === previousQuiz)) $('#quiz-document').value = previousQuiz;
+  $('#quiz-document').innerHTML = ready.length ? options : '<option value="">Add or approve a PDF first</option>';
+  if (ready.some(doc => doc.id === previousStudy)) $('#study-document').value = previousStudy;
+  if (ready.some(doc => doc.id === previousQuiz)) $('#quiz-document').value = previousQuiz;
   updateRange();
 }
 function updateRange() {
@@ -110,17 +111,20 @@ $('#upload-form').onsubmit = event => {
     const files = Array.from($('#upload-files').files);
     try {
       for (let i = 0; i < files.length; i++) {
-        notice(`Reading and indexing ${files[i].name} (${i + 1}/${files.length}) on your laptop…`);
+        notice(`Reading ${files[i].name} (${i + 1}/${files.length}) on your laptop…`);
         const body = new FormData(); body.append('subject_id', state.subject); body.append('file', files[i]);
+        body.append('force_scan', $('#force-scan').checked);
         await api('/documents', {method:'POST', body});
       }
       $('#upload-form').reset(); $('#file-description').textContent = 'No files selected';
-      notice('Your material is ready. Head to Study together or Practice.');
+      notice('PDFs added. Review any scanned pages on your desk before studying them.');
     } finally { await loadDocuments(); }
   });
 };
 $('#refresh').onclick = () => { if (!state.busy) perform(loadDocuments); };
 $('#documents').onclick = event => {
+  const review = event.target.closest('[data-review]');
+  if (review && !state.busy) { perform(() => openReview(review.dataset.review)); return; }
   const button = event.target.closest('[data-delete]');
   if (!button || state.busy) return;
   const doc = state.documents.find(doc => doc.id === button.dataset.delete);
@@ -132,6 +136,65 @@ $('#documents').onclick = event => {
     await loadDocuments(); notice('PDF and its local index removed.');
   });
 };
+async function openReview(id) {
+  const result = await api(`/documents/${id}/review`);
+  if (result.document.status !== 'needs_review') throw new Error('This document is already approved. Refresh your desk.');
+  state.review = {...result, index: 0, checked: new Set()};
+  $('#review-title').textContent = result.document.title;
+  $('#review-page').innerHTML = result.pages.map((p, i) => `<option value="${i}">Page ${p.page}</option>`).join('');
+  $('#review-status').textContent = 'Choose a page, read it locally, then correct and check the text against the image.';
+  renderReview();
+  $('#review-dialog').showModal();
+}
+function renderReview() {
+  const review = state.review, page = review.pages[review.index];
+  $('#review-page').value = review.index;
+  $('#review-image').src = `/api/documents/${review.document.id}/pages/${page.page}/image`;
+  $('#review-image').alt = `Original PDF page ${page.page}`;
+  $('#review-text').value = page.text;
+  $('#review-checked').checked = review.checked.has(page.page);
+  $('#review-progress').textContent = `${review.checked.size}/${review.pages.length} scanned pages checked`;
+}
+$('#review-page').onchange = () => { state.review.index = Number($('#review-page').value); renderReview(); };
+$('#review-text').oninput = () => {
+  const review = state.review, page = review.pages[review.index];
+  page.text = $('#review-text').value;
+  review.checked.delete(page.page);
+  $('#review-checked').checked = false;
+  $('#review-progress').textContent = `${review.checked.size}/${review.pages.length} scanned pages checked`;
+};
+$('#review-checked').onchange = () => {
+  const review = state.review, page = review.pages[review.index];
+  if ($('#review-checked').checked) review.checked.add(page.page); else review.checked.delete(page.page);
+  $('#review-progress').textContent = `${review.checked.size}/${review.pages.length} scanned pages checked`;
+};
+$('#read-page').onclick = () => perform(async () => {
+  const review = state.review, page = review.pages[review.index];
+  if (page.text && !window.confirm('Replace this page’s draft and your edits with a new local transcription?')) return;
+  $('#review-status').textContent = 'Reading this page with local Gemma… Allow a few minutes on a laptop.';
+  try {
+    const draft = await post(`/documents/${review.document.id}/pages/${page.page}/ocr`, {});
+    page.text = draft.text;
+    review.checked.delete(page.page);
+    renderReview();
+    $('#review-status').textContent = 'Unverified draft. Check every line, especially numbers and equations. Correct mistakes or remove unreadable lines.';
+  } catch (error) { $('#review-status').textContent = error.message; throw error; }
+});
+$('#approve-review').onclick = () => perform(async () => {
+  const review = state.review;
+  if (review.checked.size !== review.pages.length) {
+    $('#review-status').textContent = 'Check every scanned page against its image before approval. Leave unreadable pages blank to exclude them.';
+    return;
+  }
+  $('#review-status').textContent = 'Indexing your approved text locally…';
+  try {
+    await post(`/documents/${review.document.id}/review`, {version: review.version,
+      pages: review.pages.map(p => ({page: p.page, text: p.text}))});
+    $('#review-dialog').close(); state.review = null;
+    await loadDocuments(); notice('Reviewed notes are ready to study. Click citations to compare the text with the original page.');
+  } catch (error) { $('#review-status').textContent = error.message; throw error; }
+});
+$('#close-review').onclick = () => $('#review-dialog').close();
 function citations(items) {
   return items.map(c => `<button class="cite" data-source="${esc(c.document_id)}" data-page="${c.page}" data-quote="${esc(c.quote || '')}">${esc(c.label)} ${esc(c.document_title)} ↗</button>`).join('');
 }
@@ -163,11 +226,17 @@ document.addEventListener('click', async event => {
   if (!link) return;
   $('#source-title').textContent = 'Loading source…'; $('#source-text').textContent = '';
   $('#source-quote').hidden = true;
+  $('#source-image').hidden = true; $('#source-provenance').textContent = '';
   if (!$('#source-dialog').open) $('#source-dialog').showModal();
   try {
     const page = await api(`/documents/${link.dataset.source}/pages/${link.dataset.page}`);
     $('#source-title').textContent = `${page.title} · Page ${page.page}`;
-    $('#source-text').textContent = page.text || 'This page contains no selectable text.';
+    $('#source-text').textContent = page.text || 'This page contains no approved text.';
+    if (page.extraction === 'local_ocr') {
+      $('#source-provenance').textContent = 'Human-reviewed scan transcription. Verification checks this text; compare it with the original page below.';
+      $('#source-image').src = `/api/documents/${link.dataset.source}/pages/${page.page}/image`;
+      $('#source-image').alt = `Original PDF page ${page.page}`; $('#source-image').hidden = false;
+    }
     if (link.dataset.quote) { $('#source-quote').textContent = link.dataset.quote; $('#source-quote').hidden = false; }
   } catch (error) { $('#source-title').textContent = 'Source unavailable'; $('#source-text').textContent = error.message; }
 });
