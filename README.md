@@ -17,6 +17,8 @@ Open-weight models make the app work: **Gemma** drafts explanations and question
 
 For the submission recording, use the [three-minute shot list, narration and evidence guide](docs/DEMO.md). It distinguishes local image transcription from Gemma tutoring and Sentry metadata, and lists the real screenshots still needed.
 
+The [submission figures and captions](docs/SUBMISSION_VISUALS.md) show the implemented architecture, recorded evaluation counts and a live trace's latency breakdown. PNGs are ready for the DEV post; editable SVGs and their renderer are included.
+
 ## Setup
 
 Requirements: Python **3.11–3.13**, [uv](https://docs.astral.sh/uv/), and a current [Ollama](https://ollama.com/) (scan path tested with 0.35.1). Install dependencies and pull local weights once while online:

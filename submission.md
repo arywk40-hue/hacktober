@@ -51,6 +51,10 @@ The core is a **local retrieval-augmented generation (RAG) pipeline**, built wit
 | `nomic-embed-text` | Document and query embeddings |
 | `glm-ocr:q8_0` | Optional transcription of scanned pages |
 
+![CiteTutor architecture: local PDF ingestion, reviewed OCR, hybrid retrieval, Gemma drafts, citation guards, Qwen verification, and a separate metadata-only Sentry boundary.](https://raw.githubusercontent.com/arywk40-hue/hacktober/main/docs/assets/citetutor-architecture.png)
+
+*Architecture of the implemented application. Drafts pass citation and source-support checks before display; optional telemetry crosses a separate metadata-only boundary.*
+
 ### Page-preserving retrieval
 
 PyMuPDF extracts text per physical PDF page. I split it into overlapping chunks, with a maximum of **1,600 characters and 200-character overlap**, without crossing page boundaries. Each chunk retains its document identity and page number.
@@ -110,6 +114,10 @@ The revised pipeline ran ten questions against an original three-page mechanics 
 | False refusals on supported questions | 0 / 7 |
 | Quiz candidates | 1 accepted, 1 rejected |
 | Returned tutor latency | Median 44.5 s; range 34.3–57.6 s |
+
+![Recorded CiteTutor results: supported answers correct rose from 4 of 7 to 7 of 7, false refusals fell from 3 of 7 to 0 of 7, and both runs refused 3 of 3 unrelated questions. A separate live trace took 45.73 seconds.](https://raw.githubusercontent.com/arywk40-hue/hacktober/main/docs/assets/citetutor-results.png)
+
+*Two recorded runs on the same small fixture, plus a separate live Sentry timing breakdown. Prompts and runtime changed, so this is not a controlled ablation or a comparison against other projects. The trace is replotted from recorded measurements; actual dashboard screenshots belong in the Sentry section.*
 
 The accepted short-answer question used the source's **9 J** kinetic-energy example on page 2. The MCQ was rejected because its key disagreed with the blind solver. That disagreement records a gate outcome; it does not establish which model was wrong.
 
