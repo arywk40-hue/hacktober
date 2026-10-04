@@ -1,0 +1,80 @@
+[
+  {
+    "id": "q1",
+    "question": "State Newton's first law.",
+    "in_scope": true,
+    "expected_pages": [
+      1
+    ],
+    "answer_patterns": [
+      "(?:rest|constant velocity|straight line)",
+      "(?:net|external).*force"
+    ],
+    "correct_by_gold_patterns": false,
+    "result": {
+      "declined": true,
+      "reason": "Not enough evidence in this document",
+      "answer": "Not enough evidence in this document",
+      "segments": [],
+      "attempts": 3,
+      "verification_failures": [
+        "No complete, independently supported draft passed after three attempts"
+      ]
+    },
+    "citation_count": 0,
+    "gold_page_citations": 0,
+    "seconds": 116.623
+  },
+  {
+    "id": "q2",
+    "question": "What is the net force on a 2 kg body accelerating at 4 m/s^2? Give the value and unit.",
+    "in_scope": true,
+    "expected_pages": [
+      1
+    ],
+    "answer_patterns": [
+      "(?:8|eight)\\s*(?:n\\b|newtons)"
+    ],
+    "correct_by_gold_patterns": false,
+    "result": {
+      "declined": true,
+      "reason": "Not enough evidence in this document",
+      "answer": "Not enough evidence in this document",
+      "segments": [],
+      "attempts": 3,
+      "verification_failures": [
+        "No complete, independently supported draft passed after three attempts"
+      ]
+    },
+    "citation_count": 0,
+    "gold_page_citations": 0,
+    "seconds": 126.363
+  },
+  {
+    "id": "q3",
+    "question": "According to Newton's third law, how do the interaction forces compare and do they act on the same body?",
+    "in_scope": true,
+    "expected_pages": [
+      1
+    ],
+    "answer_patterns": [
+      "equal",
+      "opposite",
+      "different"
+    ],
+    "correct_by_gold_patterns": false,
+    "result": {
+      "declined": true,
+      "reason": "Not enough evidence in this document",
+      "answer": "Not enough evidence in this document",
+      "segments": [],
+      "attempts": 3,
+      "verification_failures": [
+        "No complete, independently supported draft passed after three attempts"
+      ]
+    },
+    "citation_count": 0,
+    "gold_page_citations": 0,
+    "seconds": 103.731
+  }
+]

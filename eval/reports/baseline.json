@@ -1,0 +1,437 @@
+{
+  "generated_at": "2026-10-04T12:38:21.874612+05:30",
+  "git_revision": "bb128cba1227c09a988ccd1b95ec7baa1d84f96e",
+  "dirty_worktree": true,
+  "models": {
+    "ready": true,
+    "roles": {
+      "generator": {
+        "model": "gemma3:4b",
+        "ready": true,
+        "family": "gemma",
+        "size": "4.3B"
+      },
+      "verifier": {
+        "model": "qwen2.5:3b",
+        "ready": true,
+        "family": "qwen",
+        "size": "3.1B"
+      },
+      "embedding": {
+        "model": "nomic-embed-text",
+        "ready": true,
+        "family": "nomic-bert",
+        "size": "137M"
+      }
+    },
+    "local_only": true
+  },
+  "seconds": 1245.521,
+  "method": "Gold regex correctness and document/page citation checks; manually review all rows. Seven in-scope, three out-of-scope cases. No fake models or cloud calls.",
+  "metrics": {
+    "in_scope_answer_correctness": null,
+    "in_scope_success_rate": 0.0,
+    "citation_accuracy_against_gold_pages": null,
+    "citation_coverage_for_answers": null,
+    "out_of_scope_refusal_rate": 1.0,
+    "in_scope_refusal_rate": 1.0,
+    "questions": 10,
+    "in_scope": 7,
+    "out_of_scope": 3,
+    "quiz_accepted": 1,
+    "quiz_rejected": 1
+  },
+  "questions": [
+    {
+      "id": "q1",
+      "question": "State Newton's first law.",
+      "in_scope": true,
+      "expected_pages": [
+        1
+      ],
+      "answer_patterns": [
+        "(?:rest|constant velocity|straight line)",
+        "(?:net|external).*force"
+      ],
+      "correct_by_gold_patterns": false,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 0,
+        "verification_failures": [
+          "Retrieved evidence cannot fully answer this question"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 57.059
+    },
+    {
+      "id": "q2",
+      "question": "What is the net force on a 2 kg body accelerating at 4 m/s^2? Give the value and unit.",
+      "in_scope": true,
+      "expected_pages": [
+        1
+      ],
+      "answer_patterns": [
+        "(?:8|eight)\\s*(?:n\\b|newtons)"
+      ],
+      "correct_by_gold_patterns": false,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 0,
+        "verification_failures": [
+          "Retrieved evidence cannot fully answer this question"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 68.655
+    },
+    {
+      "id": "q3",
+      "question": "According to Newton's third law, how do the interaction forces compare and do they act on the same body?",
+      "in_scope": true,
+      "expected_pages": [
+        1
+      ],
+      "answer_patterns": [
+        "equal",
+        "opposite",
+        "different"
+      ],
+      "correct_by_gold_patterns": false,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 0,
+        "verification_failures": [
+          "Retrieved evidence cannot fully answer this question"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 99.493
+    },
+    {
+      "id": "q4",
+      "question": "What kinetic energy does a 2 kg body moving at 3 m/s have? Give the value and unit.",
+      "in_scope": true,
+      "expected_pages": [
+        2
+      ],
+      "answer_patterns": [
+        "(?:9|nine)\\s*(?:j\\b|joules)"
+      ],
+      "correct_by_gold_patterns": false,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 0,
+        "verification_failures": [
+          "Retrieved evidence cannot fully answer this question"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 57.763
+    },
+    {
+      "id": "q5",
+      "question": "What momentum does a 2 kg body moving at 3 m/s have? Give the value and unit.",
+      "in_scope": true,
+      "expected_pages": [
+        2
+      ],
+      "answer_patterns": [
+        "(?:6|six)\\s*(?:kg|kilogram)"
+      ],
+      "correct_by_gold_patterns": false,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 0,
+        "verification_failures": [
+          "Retrieved evidence cannot fully answer this question"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 54.482
+    },
+    {
+      "id": "q6",
+      "question": "How much work does a 10 N force do over a parallel displacement of 3 m? Give the value and unit.",
+      "in_scope": true,
+      "expected_pages": [
+        3
+      ],
+      "answer_patterns": [
+        "(?:30|thirty)\\s*(?:j\\b|joules)"
+      ],
+      "correct_by_gold_patterns": false,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 0,
+        "verification_failures": [
+          "Retrieved evidence cannot fully answer this question"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 264.379
+    },
+    {
+      "id": "q7",
+      "question": "What is the average power for 30 J of work done in 6 seconds? Give the value and unit.",
+      "in_scope": true,
+      "expected_pages": [
+        3
+      ],
+      "answer_patterns": [
+        "(?:5|five)\\s*(?:w\\b|watts)"
+      ],
+      "correct_by_gold_patterns": false,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 0,
+        "verification_failures": [
+          "Retrieved evidence cannot fully answer this question"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 53.633
+    },
+    {
+      "id": "q8",
+      "question": "Which pizza should I order for dinner?",
+      "in_scope": false,
+      "expected_pages": [],
+      "answer_patterns": [],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 0,
+        "verification_failures": [
+          "Retrieved evidence cannot fully answer this question"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 74.357
+    },
+    {
+      "id": "q9",
+      "question": "Explain quantum entanglement and Bell's theorem.",
+      "in_scope": false,
+      "expected_pages": [],
+      "answer_patterns": [],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 0,
+        "verification_failures": [
+          "Retrieved evidence cannot fully answer this question"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 22.794
+    },
+    {
+      "id": "q10",
+      "question": "Who is the current prime minister of India?",
+      "in_scope": false,
+      "expected_pages": [],
+      "answer_patterns": [],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 0,
+        "verification_failures": [
+          "Retrieved evidence cannot fully answer this question"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 19.165
+    }
+  ],
+  "quiz": {
+    "requested": 2,
+    "accepted": 1,
+    "rejected": 1,
+    "questions": [
+      {
+        "type": "short",
+        "stem": "A 2 kg body moving at 3 m/s has what kinetic energy?",
+        "options": [],
+        "answer": "9 J",
+        "rationale": "According to the provided text, kinetic energy is calculated as E = (1/2) m v^2. Substituting the given values (m = 2 kg, v = 3 m/s) yields E = (1/2) * 2 kg * (3 m/s)^2 = 9 J.",
+        "source_unit_ids": [
+          "66c31f3727ae426a869aa2a89c7913c3"
+        ],
+        "supporting_quotes": [
+          {
+            "source_unit_id": "66c31f3727ae426a869aa2a89c7913c3",
+            "quote": "Kinetic energy is the energy of motion. For a body of mass m moving at speed v, kinetic energy is E = (1/2) m v^2. Energy is measured in joules (J)."
+          }
+        ],
+        "citations": [
+          {
+            "unit_id": "66c31f3727ae426a869aa2a89c7913c3",
+            "document_id": "f1b387a250ec45a7914f7f2041ac30eb",
+            "document_title": "sample.pdf",
+            "page": 2,
+            "label": "[p. 2]",
+            "url": "/api/documents/f1b387a250ec45a7914f7f2041ac30eb/pages/2",
+            "quote": "Kinetic energy is the energy of motion. For a body of mass m moving at speed v, kinetic energy is E = (1/2) m v^2. Energy is measured in joules (J)."
+          }
+        ],
+        "verification": {
+          "blind_solve": "pass",
+          "source_support": "pass",
+          "quotes": "exact after whitespace normalization",
+          "generator": "gemma3:4b",
+          "verifier": "qwen2.5:3b"
+        }
+      }
+    ],
+    "rejections": [
+      {
+        "candidate": 1,
+        "reason": "Invalid question or verifier schema"
+      }
+    ],
+    "rejection_summary": {
+      "Invalid question or verifier schema": 1
+    }
+  },
+  "model_calls": [
+    {
+      "role": "verifier",
+      "model": "qwen2.5:3b",
+      "seconds": 56.214,
+      "input_tokens": 842,
+      "output_tokens": 119
+    },
+    {
+      "role": "verifier",
+      "model": "qwen2.5:3b",
+      "seconds": 67.515,
+      "input_tokens": 862,
+      "output_tokens": 166
+    },
+    {
+      "role": "verifier",
+      "model": "qwen2.5:3b",
+      "seconds": 98.152,
+      "input_tokens": 858,
+      "output_tokens": 195
+    },
+    {
+      "role": "verifier",
+      "model": "qwen2.5:3b",
+      "seconds": 55.329,
+      "input_tokens": 859,
+      "output_tokens": 116
+    },
+    {
+      "role": "verifier",
+      "model": "qwen2.5:3b",
+      "seconds": 51.274,
+      "input_tokens": 858,
+      "output_tokens": 106
+    },
+    {
+      "role": "verifier",
+      "model": "qwen2.5:3b",
+      "seconds": 204.419,
+      "input_tokens": 862,
+      "output_tokens": 180
+    },
+    {
+      "role": "verifier",
+      "model": "qwen2.5:3b",
+      "seconds": 48.21,
+      "input_tokens": 860,
+      "output_tokens": 177
+    },
+    {
+      "role": "verifier",
+      "model": "qwen2.5:3b",
+      "seconds": 71.191,
+      "input_tokens": 844,
+      "output_tokens": 53
+    },
+    {
+      "role": "verifier",
+      "model": "qwen2.5:3b",
+      "seconds": 21.323,
+      "input_tokens": 847,
+      "output_tokens": 70
+    },
+    {
+      "role": "verifier",
+      "model": "qwen2.5:3b",
+      "seconds": 17.993,
+      "input_tokens": 845,
+      "output_tokens": 54
+    },
+    {
+      "role": "generator",
+      "model": "gemma3:4b",
+      "seconds": 188.239,
+      "input_tokens": 1330,
+      "output_tokens": 273
+    },
+    {
+      "role": "generator",
+      "model": "gemma3:4b",
+      "seconds": 198.986,
+      "input_tokens": 1329,
+      "output_tokens": 245
+    },
+    {
+      "role": "verifier",
+      "model": "qwen2.5:3b",
+      "seconds": 23.928,
+      "input_tokens": 900,
+      "output_tokens": 73
+    },
+    {
+      "role": "verifier",
+      "model": "qwen2.5:3b",
+      "seconds": 17.849,
+      "input_tokens": 633,
+      "output_tokens": 77
+    }
+  ]
+}

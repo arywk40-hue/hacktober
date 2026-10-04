@@ -1,0 +1,671 @@
+{
+  "generated_at": "2026-10-04T13:13:45.300167+05:30",
+  "git_revision": "2fe2c36d0612bba5422b995b6fda2fc69335e92b",
+  "dirty_worktree": true,
+  "models": {
+    "ready": true,
+    "roles": {
+      "generator": {
+        "model": "gemma3:1b",
+        "ready": true,
+        "family": "gemma",
+        "size": "999.89M"
+      },
+      "verifier": {
+        "model": "qwen2.5:3b",
+        "ready": true,
+        "family": "qwen",
+        "size": "3.1B"
+      },
+      "embedding": {
+        "model": "nomic-embed-text",
+        "ready": true,
+        "family": "nomic-bert",
+        "size": "137M"
+      }
+    },
+    "local_only": true
+  },
+  "seconds": 360.243,
+  "method": "Gold regex correctness and document/page citation checks; manually review all rows. Seven in-scope, three out-of-scope cases. No fake models or cloud calls.",
+  "metrics": {
+    "in_scope_answer_correctness": 0.7143,
+    "in_scope_success_rate": 0.7143,
+    "citation_accuracy_against_gold_pages": 1.0,
+    "citation_coverage_for_answers": 1.0,
+    "out_of_scope_refusal_rate": 1.0,
+    "in_scope_refusal_rate": 0.0,
+    "questions": 10,
+    "in_scope": 7,
+    "out_of_scope": 3,
+    "quiz_accepted": 0,
+    "quiz_rejected": 2
+  },
+  "questions": [
+    {
+      "id": "q1",
+      "question": "State Newton's first law.",
+      "in_scope": true,
+      "expected_pages": [
+        1
+      ],
+      "answer_patterns": [
+        "(?:rest|constant velocity|straight line)",
+        "(?:net|external).*force"
+      ],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": false,
+        "segments": [
+          {
+            "text": "Newton's first law states that a body remains at rest or moves in a straight line at constant velocity unless a net external force acts on it.",
+            "citations": [
+              {
+                "unit_id": "193d0f9493424085907e013a17872315",
+                "document_id": "ea5690501aff49b1b1c26f2d1e59f82c",
+                "document_title": "sample.pdf",
+                "page": 1,
+                "label": "[p. 1]",
+                "url": "/api/documents/ea5690501aff49b1b1c26f2d1e59f82c/pages/1"
+              }
+            ]
+          }
+        ],
+        "answer": "Newton's first law states that a body remains at rest or moves in a straight line at constant velocity unless a net external force acts on it. sample.pdf [p. 1]",
+        "attempts": 1,
+        "verification": "Independent local support check",
+        "generator": "gemma3:1b",
+        "verifier": "qwen2.5:3b"
+      },
+      "citation_count": 1,
+      "gold_page_citations": 1,
+      "seconds": 18.436
+    },
+    {
+      "id": "q2",
+      "question": "What is the net force on a 2 kg body accelerating at 4 m/s^2? Give the value and unit.",
+      "in_scope": true,
+      "expected_pages": [
+        1
+      ],
+      "answer_patterns": [
+        "(?:8|eight)\\s*(?:n\\b|newtons)"
+      ],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": false,
+        "segments": [
+          {
+            "text": "The net force on the 2 kg body is 8 N.",
+            "citations": [
+              {
+                "unit_id": "193d0f9493424085907e013a17872315",
+                "document_id": "ea5690501aff49b1b1c26f2d1e59f82c",
+                "document_title": "sample.pdf",
+                "page": 1,
+                "label": "[p. 1]",
+                "url": "/api/documents/ea5690501aff49b1b1c26f2d1e59f82c/pages/1"
+              }
+            ]
+          }
+        ],
+        "answer": "The net force on the 2 kg body is 8 N. sample.pdf [p. 1]",
+        "attempts": 1,
+        "verification": "Independent local support check",
+        "generator": "gemma3:1b",
+        "verifier": "qwen2.5:3b"
+      },
+      "citation_count": 1,
+      "gold_page_citations": 1,
+      "seconds": 20.246
+    },
+    {
+      "id": "q3",
+      "question": "According to Newton's third law, how do the interaction forces compare and do they act on the same body?",
+      "in_scope": true,
+      "expected_pages": [
+        1
+      ],
+      "answer_patterns": [
+        "equal",
+        "opposite",
+        "different"
+      ],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": false,
+        "segments": [
+          {
+            "text": "According to Newton's third law, forces in an interaction are equal in magnitude and opposite in direction. They act on different bodies, so they do not cancel as forces on one body.",
+            "citations": [
+              {
+                "unit_id": "193d0f9493424085907e013a17872315",
+                "document_id": "ea5690501aff49b1b1c26f2d1e59f82c",
+                "document_title": "sample.pdf",
+                "page": 1,
+                "label": "[p. 1]",
+                "url": "/api/documents/ea5690501aff49b1b1c26f2d1e59f82c/pages/1"
+              }
+            ]
+          }
+        ],
+        "answer": "According to Newton's third law, forces in an interaction are equal in magnitude and opposite in direction. They act on different bodies, so they do not cancel as forces on one body. sample.pdf [p. 1]",
+        "attempts": 1,
+        "verification": "Independent local support check",
+        "generator": "gemma3:1b",
+        "verifier": "qwen2.5:3b"
+      },
+      "citation_count": 1,
+      "gold_page_citations": 1,
+      "seconds": 21.903
+    },
+    {
+      "id": "q4",
+      "question": "What kinetic energy does a 2 kg body moving at 3 m/s have? Give the value and unit.",
+      "in_scope": true,
+      "expected_pages": [
+        2
+      ],
+      "answer_patterns": [
+        "(?:9|nine)\\s*(?:j\\b|joules)"
+      ],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": false,
+        "segments": [
+          {
+            "text": "A 2 kg body moving at 3 m/s has kinetic energy of 9 J.",
+            "citations": [
+              {
+                "unit_id": "411b4c6b82a7412492ef1c8f75ed0727",
+                "document_id": "ea5690501aff49b1b1c26f2d1e59f82c",
+                "document_title": "sample.pdf",
+                "page": 2,
+                "label": "[p. 2]",
+                "url": "/api/documents/ea5690501aff49b1b1c26f2d1e59f82c/pages/2"
+              }
+            ]
+          }
+        ],
+        "answer": "A 2 kg body moving at 3 m/s has kinetic energy of 9 J. sample.pdf [p. 2]",
+        "attempts": 1,
+        "verification": "Independent local support check",
+        "generator": "gemma3:1b",
+        "verifier": "qwen2.5:3b"
+      },
+      "citation_count": 1,
+      "gold_page_citations": 1,
+      "seconds": 18.63
+    },
+    {
+      "id": "q5",
+      "question": "What momentum does a 2 kg body moving at 3 m/s have? Give the value and unit.",
+      "in_scope": true,
+      "expected_pages": [
+        2
+      ],
+      "answer_patterns": [
+        "(?:6|six)\\s*(?:kg|kilogram)"
+      ],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": false,
+        "segments": [
+          {
+            "text": "A 2 kg body moving at 3 m/s has a momentum of 6 kg m/s.",
+            "citations": [
+              {
+                "unit_id": "411b4c6b82a7412492ef1c8f75ed0727",
+                "document_id": "ea5690501aff49b1b1c26f2d1e59f82c",
+                "document_title": "sample.pdf",
+                "page": 2,
+                "label": "[p. 2]",
+                "url": "/api/documents/ea5690501aff49b1b1c26f2d1e59f82c/pages/2"
+              }
+            ]
+          }
+        ],
+        "answer": "A 2 kg body moving at 3 m/s has a momentum of 6 kg m/s. sample.pdf [p. 2]",
+        "attempts": 1,
+        "verification": "Independent local support check",
+        "generator": "gemma3:1b",
+        "verifier": "qwen2.5:3b"
+      },
+      "citation_count": 1,
+      "gold_page_citations": 1,
+      "seconds": 18.434
+    },
+    {
+      "id": "q6",
+      "question": "How much work does a 10 N force do over a parallel displacement of 3 m? Give the value and unit.",
+      "in_scope": true,
+      "expected_pages": [
+        3
+      ],
+      "answer_patterns": [
+        "(?:30|thirty)\\s*(?:j\\b|joules)"
+      ],
+      "correct_by_gold_patterns": false,
+      "result": {
+        "declined": false,
+        "segments": [
+          {
+            "text": "The work done is calculated as W = F d",
+            "citations": [
+              {
+                "unit_id": "77f5c83e1e454439940dabcced36d30c",
+                "document_id": "ea5690501aff49b1b1c26f2d1e59f82c",
+                "document_title": "sample.pdf",
+                "page": 3,
+                "label": "[p. 3]",
+                "url": "/api/documents/ea5690501aff49b1b1c26f2d1e59f82c/pages/3"
+              }
+            ]
+          }
+        ],
+        "answer": "The work done is calculated as W = F d sample.pdf [p. 3]",
+        "attempts": 1,
+        "verification": "Independent local support check",
+        "generator": "gemma3:1b",
+        "verifier": "qwen2.5:3b"
+      },
+      "citation_count": 1,
+      "gold_page_citations": 1,
+      "seconds": 21.491
+    },
+    {
+      "id": "q7",
+      "question": "What is the average power for 30 J of work done in 6 seconds? Give the value and unit.",
+      "in_scope": true,
+      "expected_pages": [
+        3
+      ],
+      "answer_patterns": [
+        "(?:5|five)\\s*(?:w\\b|watts)"
+      ],
+      "correct_by_gold_patterns": false,
+      "result": {
+        "declined": false,
+        "segments": [
+          {
+            "text": "The average power is work divided by elapsed time: P = W/t.",
+            "citations": [
+              {
+                "unit_id": "77f5c83e1e454439940dabcced36d30c",
+                "document_id": "ea5690501aff49b1b1c26f2d1e59f82c",
+                "document_title": "sample.pdf",
+                "page": 3,
+                "label": "[p. 3]",
+                "url": "/api/documents/ea5690501aff49b1b1c26f2d1e59f82c/pages/3"
+              }
+            ]
+          }
+        ],
+        "answer": "The average power is work divided by elapsed time: P = W/t. sample.pdf [p. 3]",
+        "attempts": 1,
+        "verification": "Independent local support check",
+        "generator": "gemma3:1b",
+        "verifier": "qwen2.5:3b"
+      },
+      "citation_count": 1,
+      "gold_page_citations": 1,
+      "seconds": 18.397
+    },
+    {
+      "id": "q8",
+      "question": "Which pizza should I order for dinner?",
+      "in_scope": false,
+      "expected_pages": [],
+      "answer_patterns": [],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 3,
+        "verification_failures": [
+          "No complete, independently supported draft passed after three attempts"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 53.473
+    },
+    {
+      "id": "q9",
+      "question": "Explain quantum entanglement and Bell's theorem.",
+      "in_scope": false,
+      "expected_pages": [],
+      "answer_patterns": [],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 3,
+        "verification_failures": [
+          "No complete, independently supported draft passed after three attempts"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 60.712
+    },
+    {
+      "id": "q10",
+      "question": "Who is the current prime minister of India?",
+      "in_scope": false,
+      "expected_pages": [],
+      "answer_patterns": [],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 3,
+        "verification_failures": [
+          "No complete, independently supported draft passed after three attempts"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 61.944
+    }
+  ],
+  "quiz": {
+    "requested": 2,
+    "accepted": 0,
+    "rejected": 2,
+    "questions": [],
+    "rejections": [
+      {
+        "candidate": 1,
+        "reason": "Invalid question or verifier schema"
+      },
+      {
+        "candidate": 2,
+        "reason": "Invalid question or verifier schema"
+      }
+    ],
+    "rejection_summary": {
+      "Invalid question or verifier schema": 2
+    }
+  },
+  "model_calls": [
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 7.567,
+      "input_tokens": 1004,
+      "output_tokens": 67
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 10.356,
+      "input_tokens": 468,
+      "output_tokens": 27
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 7.634,
+      "input_tokens": 1024,
+      "output_tokens": 50
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 11.785,
+      "input_tokens": 473,
+      "output_tokens": 47
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 7.702,
+      "input_tokens": 1020,
+      "output_tokens": 74
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 13.371,
+      "input_tokens": 492,
+      "output_tokens": 60
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 6.836,
+      "input_tokens": 1021,
+      "output_tokens": 48
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 10.914,
+      "input_tokens": 447,
+      "output_tokens": 49
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 6.303,
+      "input_tokens": 1020,
+      "output_tokens": 50
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 11.523,
+      "input_tokens": 448,
+      "output_tokens": 51
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 5.852,
+      "input_tokens": 1023,
+      "output_tokens": 39
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 14.809,
+      "input_tokens": 434,
+      "output_tokens": 85
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 6.299,
+      "input_tokens": 1021,
+      "output_tokens": 44
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 11.361,
+      "input_tokens": 436,
+      "output_tokens": 53
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 6.708,
+      "input_tokens": 1005,
+      "output_tokens": 57
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 9.822,
+      "input_tokens": 434,
+      "output_tokens": 37
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 6.633,
+      "input_tokens": 1038,
+      "output_tokens": 53
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 10.928,
+      "input_tokens": 439,
+      "output_tokens": 46
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 7.105,
+      "input_tokens": 1044,
+      "output_tokens": 48
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 11.6,
+      "input_tokens": 433,
+      "output_tokens": 50
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 7.632,
+      "input_tokens": 1006,
+      "output_tokens": 68
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 10.89,
+      "input_tokens": 479,
+      "output_tokens": 36
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 8.461,
+      "input_tokens": 1038,
+      "output_tokens": 99
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 12.004,
+      "input_tokens": 518,
+      "output_tokens": 36
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 9.352,
+      "input_tokens": 1038,
+      "output_tokens": 99
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 11.582,
+      "input_tokens": 518,
+      "output_tokens": 36
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 7.359,
+      "input_tokens": 1006,
+      "output_tokens": 46
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 14.147,
+      "input_tokens": 424,
+      "output_tokens": 48
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 6.591,
+      "input_tokens": 1050,
+      "output_tokens": 37
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 12.832,
+      "input_tokens": 424,
+      "output_tokens": 48
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:1b",
+      "seconds": 7.255,
+      "input_tokens": 1050,
+      "output_tokens": 37
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 12.799,
+      "input_tokens": 424,
+      "output_tokens": 48
+    },
+    {
+      "role": "generator",
+      "schema": "Question",
+      "model": "gemma3:1b",
+      "seconds": 14.087,
+      "input_tokens": 1248,
+      "output_tokens": 188
+    },
+    {
+      "role": "generator",
+      "schema": "Question",
+      "model": "gemma3:1b",
+      "seconds": 30.899,
+      "input_tokens": 1247,
+      "output_tokens": 552
+    }
+  ]
+}

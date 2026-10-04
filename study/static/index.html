@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>CiteTutor · Your college study space</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%2323473d'/%3E%3Ctext x='9' y='29' font-size='28' fill='white'%3EC%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/style.css"><script src="/static/app.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a href="/" class="brand"><span class="brand-icon">C<span>↗</span></span><span>CiteTutor<small>A little help. A clearer source.</small></span></a>
+    <div class="eyebrow">YOUR SUBJECT</div>
+    <label class="sr-only" for="subject-select">Current subject</label>
+    <select id="subject-select"><option value="">Create your first subject</option></select>
+    <button id="new-subject" class="add-button">＋ New subject</button>
+    <nav aria-label="Study workspace">
+      <button data-view="library" class="active"><span>▤</span> Your material</button>
+      <button data-view="study"><span>✧</span> Study together</button>
+      <button data-view="practice"><span>◎</span> Practice</button>
+    </nav>
+    <div class="sidebar-note"><span class="local-dot"></span> Runs on your laptop<p>Your notes stay here.<br>Your answers come with evidence.</p></div>
+  </aside>
+  <main>
+    <header><span class="breadcrumb">YOUR STUDY SPACE <span>/</span> <strong id="subject-label">Getting started</strong></span><span class="privacy-label">◉ Local & private</span></header>
+    <div id="notice" role="status" aria-live="polite" hidden></div>
+    <section id="library" class="view">
+      <div class="page-heading"><div><div class="eyebrow">LESS SEARCHING. MORE UNDERSTANDING.</div><h1>Your notes.<br>A <em>clearer picture.</em></h1><p>Bring your college PDFs into one subject.<br>Turn the material you already have into help you can check.</p></div><div class="margin-note">Built for a friend<br><span>studying for what’s next.</span><svg viewBox="0 0 100 65" aria-hidden="true"><path d="M8 12 Q65 0 77 47 M60 39 L78 51 L84 29"/></svg></div></div>
+      <div class="stats"><div><strong id="document-count">0</strong><span>PDFs in this subject</span></div><div><strong id="page-count">0</strong><span>Pages to learn from</span></div><div class="stat-note">Every explanation has a source.<br>Every practice question gets checked.</div></div>
+      <form id="upload-form" class="upload-card"><div class="upload-symbol">↑</div><div><h2>Make your material useful.</h2><p>Class notes, textbook chapters, or past papers.<br>Select one or several PDFs with selectable text.</p></div><label class="file-label"><span>Choose PDFs</span><input id="upload-files" type="file" accept=".pdf,application/pdf" multiple required></label><span id="file-description">No files selected</span><button id="upload-submit" class="primary" type="submit">Add to subject ↗</button><small>Files are processed here on your laptop. Scan-only PDFs need OCR first.</small></form>
+      <div class="section-heading"><h2>On your desk <span id="source-total"></span></h2><button id="refresh" class="text-button">Refresh ↻</button></div>
+      <div id="documents" class="document-list"><div class="empty-state">Create a subject to add your first PDF.</div></div>
+      <details class="model-details"><summary>Local model connection <span id="model-status">Checking…</span></summary><div id="models"></div></details>
+    </section>
+    <section id="study" class="view" hidden>
+      <div class="page-heading"><div><div class="eyebrow">A QUESTION IS A GOOD PLACE TO START.</div><h1>Let’s make it <em>click.</em></h1><p>Ask about a topic. Get an explanation. Follow the evidence.</p></div></div>
+      <div class="study-controls"><label>Learn from<select id="study-document"><option value="">All PDFs in this subject</option></select></label><label>Help me<select id="study-mode"><option value="ask">Answer a question</option><option value="explain">Understand a concept</option><option value="hint">Find a hint</option></select></label><label>Explanation style<select id="study-style"><option value="simple">Simple & clear</option><option value="concise">Keep it concise</option><option value="detailed">More detail</option></select></label></div>
+      <div id="conversation" class="conversation" aria-live="polite"><div class="empty-state"><span class="large-symbol">✧</span><h2>What are you working on?</h2><p>Ask a complete question about your material.<br>If your notes don’t cover it, CiteTutor will say so.</p><div class="prompt-list"><button data-prompt="Explain the main concept in this chapter simply." class="prompt">Explain a concept ↗</button><button data-prompt="Compare two concepts from my notes: " class="prompt">Compare ideas ↗</button></div></div></div>
+      <form id="chat-form" class="composer"><label class="sr-only" for="message">Your study question</label><textarea id="message" rows="2" maxlength="2000" placeholder="For example: Why does acceleration depend on mass?" required></textarea><button id="chat-submit" class="primary" type="submit">Ask ↗</button></form>
+      <p class="footnote">Answers appear after verification. Click a citation to read the page.<br>Ask complete questions; each request starts from your source material.</p>
+    </section>
+    <section id="practice" class="view" hidden>
+      <div class="page-heading"><div><div class="eyebrow">A LITTLE PRACTICE GOES A LONG WAY.</div><h1>Check your <em>understanding.</em></h1><p>Practice from a chapter you choose, with questions checked against the source.</p></div></div>
+      <form id="quiz-form" class="quiz-controls card"><label class="wide">Document<select id="quiz-document" required><option value="">Add a PDF first</option></select></label><label>From page<input id="page-start" type="number" min="1" value="1" required></label><label>To page<input id="page-end" type="number" min="1" value="1" required></label><label>Questions<input id="question-count" type="number" min="1" max="8" value="5" required></label><label>Question type<select id="question-type"><option value="mixed">Mixed practice</option><option value="mcq">Multiple choice</option><option value="short">Short answer</option></select></label><button id="quiz-submit" type="submit" class="primary">Make a practice set ↗</button><small>Physical PDF pages, inclusive. Choose up to 20 pages. Large sets can take a few minutes locally.</small></form>
+      <div id="quiz-summary" role="status" hidden></div>
+      <div id="quiz-results"><div class="empty-state"><span class="large-symbol">◎</span><h2>Practice you can trace back.</h2><p>Each question is solved independently and checked for support.<br>Rejected questions won’t appear in your practice set.</p></div></div>
+    </section>
+    <footer>Made for studying together. Grounded in your material.</footer>
+  </main>
+  <dialog id="subject-dialog"><form id="subject-form"><div class="eyebrow">A NEW PLACE TO LEARN</div><h2>Create a subject</h2><label>Subject name<input id="subject-title" maxlength="120" placeholder="e.g. Engineering Physics" required></label><div class="dialog-actions"><button id="cancel-subject" class="secondary" type="button">Cancel</button><button type="submit" class="primary">Create subject</button></div></form></dialog>
+  <dialog id="source-dialog" class="source-dialog"><div class="source-heading"><div><div class="eyebrow">FOLLOW THE EVIDENCE</div><h2 id="source-title">Source page</h2></div><button id="close-source" class="secondary" type="button">Close ×</button></div><blockquote id="source-quote" hidden></blockquote><pre id="source-text"></pre></dialog>
+</body>
+</html>

@@ -1,0 +1,3 @@
+# Compatibility entry point. Prefer: uv sync --frozen
+# Dependency definitions: pyproject.toml; tested resolution: uv.lock
+-e .

@@ -1,0 +1,195 @@
+[
+  {
+    "id": "q1",
+    "question": "State Newton's first law.",
+    "in_scope": true,
+    "expected_pages": [
+      1
+    ],
+    "answer_patterns": [
+      "(?:rest|constant velocity|straight line)",
+      "(?:net|external).*force"
+    ],
+    "correct_by_gold_patterns": true,
+    "result": {
+      "declined": false,
+      "segments": [
+        {
+          "text": "Newton's first law: A body remains at rest or moves in a straight line at constant velocity unless a net external force acts on it.",
+          "citations": [
+            {
+              "unit_id": "64ced49916ed42059b505fba4d315d48",
+              "document_id": "049b0bcd25cc45ccb44e935a433ab066",
+              "document_title": "sample.pdf",
+              "page": 1,
+              "label": "[p. 1]",
+              "url": "/api/documents/049b0bcd25cc45ccb44e935a433ab066/pages/1"
+            }
+          ]
+        }
+      ],
+      "answer": "Newton's first law: A body remains at rest or moves in a straight line at constant velocity unless a net external force acts on it. sample.pdf [p. 1]",
+      "attempts": 1,
+      "verification": "Independent local support check",
+      "generator": "gemma3:4b",
+      "verifier": "qwen2.5:3b"
+    },
+    "citation_count": 1,
+    "gold_page_citations": 1,
+    "seconds": 59.25
+  },
+  {
+    "id": "q2",
+    "question": "What is the net force on a 2 kg body accelerating at 4 m/s^2? Give the value and unit.",
+    "in_scope": true,
+    "expected_pages": [
+      1
+    ],
+    "answer_patterns": [
+      "(?:8|eight)\\s*(?:n\\b|newtons)"
+    ],
+    "correct_by_gold_patterns": false,
+    "result": {
+      "declined": false,
+      "segments": [
+        {
+          "text": "Net force equals mass times acceleration: F = m a. Force is measured in newtons (N), mass in kilograms (kg), and acceleration in metres per second squared (m/s^2).",
+          "citations": [
+            {
+              "unit_id": "64ced49916ed42059b505fba4d315d48",
+              "document_id": "049b0bcd25cc45ccb44e935a433ab066",
+              "document_title": "sample.pdf",
+              "page": 1,
+              "label": "[p. 1]",
+              "url": "/api/documents/049b0bcd25cc45ccb44e935a433ab066/pages/1"
+            }
+          ]
+        }
+      ],
+      "answer": "Net force equals mass times acceleration: F = m a. Force is measured in newtons (N), mass in kilograms (kg), and acceleration in metres per second squared (m/s^2). sample.pdf [p. 1]",
+      "attempts": 1,
+      "verification": "Independent local support check",
+      "generator": "gemma3:4b",
+      "verifier": "qwen2.5:3b"
+    },
+    "citation_count": 1,
+    "gold_page_citations": 1,
+    "seconds": 59.653
+  },
+  {
+    "id": "q3",
+    "question": "According to Newton's third law, how do the interaction forces compare and do they act on the same body?",
+    "in_scope": true,
+    "expected_pages": [
+      1
+    ],
+    "answer_patterns": [
+      "equal",
+      "opposite",
+      "different"
+    ],
+    "correct_by_gold_patterns": true,
+    "result": {
+      "declined": false,
+      "segments": [
+        {
+          "text": "According to Newton's third law, interaction forces are equal in magnitude and opposite in direction. They act on different bodies, so they do not cancel as forces on one body. (C1)",
+          "citations": [
+            {
+              "unit_id": "64ced49916ed42059b505fba4d315d48",
+              "document_id": "049b0bcd25cc45ccb44e935a433ab066",
+              "document_title": "sample.pdf",
+              "page": 1,
+              "label": "[p. 1]",
+              "url": "/api/documents/049b0bcd25cc45ccb44e935a433ab066/pages/1"
+            }
+          ]
+        }
+      ],
+      "answer": "According to Newton's third law, interaction forces are equal in magnitude and opposite in direction. They act on different bodies, so they do not cancel as forces on one body. (C1) sample.pdf [p. 1]",
+      "attempts": 1,
+      "verification": "Independent local support check",
+      "generator": "gemma3:4b",
+      "verifier": "qwen2.5:3b"
+    },
+    "citation_count": 1,
+    "gold_page_citations": 1,
+    "seconds": 46.941
+  },
+  {
+    "id": "q4",
+    "question": "What kinetic energy does a 2 kg body moving at 3 m/s have? Give the value and unit.",
+    "in_scope": true,
+    "expected_pages": [
+      2
+    ],
+    "answer_patterns": [
+      "(?:9|nine)\\s*(?:j\\b|joules)"
+    ],
+    "correct_by_gold_patterns": true,
+    "result": {
+      "declined": false,
+      "segments": [
+        {
+          "text": "Kinetic energy is the energy of motion. For a body of mass m moving at speed v, kinetic energy is E = (1/2) m v^2. Energy is measured in joules (J). A 2 kg body moving at 3 m/s has kinetic energy of 9 J. (C1)",
+          "citations": [
+            {
+              "unit_id": "395dcb4ed6694a2383f34dc5a90e1fce",
+              "document_id": "049b0bcd25cc45ccb44e935a433ab066",
+              "document_title": "sample.pdf",
+              "page": 2,
+              "label": "[p. 2]",
+              "url": "/api/documents/049b0bcd25cc45ccb44e935a433ab066/pages/2"
+            }
+          ]
+        }
+      ],
+      "answer": "Kinetic energy is the energy of motion. For a body of mass m moving at speed v, kinetic energy is E = (1/2) m v^2. Energy is measured in joules (J). A 2 kg body moving at 3 m/s has kinetic energy of 9 J. (C1) sample.pdf [p. 2]",
+      "attempts": 1,
+      "verification": "Independent local support check",
+      "generator": "gemma3:4b",
+      "verifier": "qwen2.5:3b"
+    },
+    "citation_count": 1,
+    "gold_page_citations": 1,
+    "seconds": 66.259
+  },
+  {
+    "id": "q5",
+    "question": "What momentum does a 2 kg body moving at 3 m/s have? Give the value and unit.",
+    "in_scope": true,
+    "expected_pages": [
+      2
+    ],
+    "answer_patterns": [
+      "(?:6|six)\\s*(?:kg|kilogram)"
+    ],
+    "correct_by_gold_patterns": true,
+    "result": {
+      "declined": false,
+      "segments": [
+        {
+          "text": "Linear momentum equals mass times velocity: p = m v. Its SI unit is kg m/s. Worked example: A 2 kg body moving at 3 m/s has momentum of 6 kg m/s.",
+          "citations": [
+            {
+              "unit_id": "64ced49916ed42059b505fba4d315d48",
+              "document_id": "049b0bcd25cc45ccb44e935a433ab066",
+              "document_title": "sample.pdf",
+              "page": 1,
+              "label": "[p. 1]",
+              "url": "/api/documents/049b0bcd25cc45ccb44e935a433ab066/pages/1"
+            }
+          ]
+        }
+      ],
+      "answer": "Linear momentum equals mass times velocity: p = m v. Its SI unit is kg m/s. Worked example: A 2 kg body moving at 3 m/s has momentum of 6 kg m/s. sample.pdf [p. 1]",
+      "attempts": 1,
+      "verification": "Independent local support check",
+      "generator": "gemma3:4b",
+      "verifier": "qwen2.5:3b"
+    },
+    "citation_count": 1,
+    "gold_page_citations": 0,
+    "seconds": 56.314
+  }
+]

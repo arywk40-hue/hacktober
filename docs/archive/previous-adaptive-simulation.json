@@ -1,0 +1,51 @@
+{
+  "kind": "synthetic_only",
+  "seed": 42,
+  "students": 30,
+  "sessions": 6,
+  "learning_model": "zpd_aware",
+  "assumptions": "Learning gain follows ZPD model: \u0394m \u221d (1-m)\u00b7exp(-|d-m|/\u03c4). Correct answers produce more learning than incorrect. Spaced practice provides a bonus over massed repetition. All arms share priors, item pool, and no-repeat policy. Hidden mastery and outcomes are simulated; this does not validate real learning.",
+  "parameters": {
+    "zpd_tau": 0.25,
+    "base_learning_rate": 0.03,
+    "spacing_half_life": 8,
+    "inter_session_decay": 0.02
+  },
+  "arms": {
+    "random": {
+      "mastery_gain": -0.00022761102591712935,
+      "gain_ci95": [
+        -0.003211212535980497,
+        0.0026225363351780983
+      ],
+      "gain_std": 0.008378219514101795,
+      "brier": 0.2776148842022432,
+      "repetition_rate": 0.0,
+      "final_mastery": 0.30440349530503535
+    },
+    "fixed": {
+      "mastery_gain": 0.009177235660926363,
+      "gain_ci95": [
+        0.006207502982469811,
+        0.012299115954483445
+      ],
+      "gain_std": 0.008508116178776478,
+      "brier": 0.2863381766878738,
+      "repetition_rate": 0.0,
+      "final_mastery": 0.31380834199187885
+    },
+    "adaptive": {
+      "mastery_gain": -0.006432748532244408,
+      "gain_ci95": [
+        -0.00867745156638516,
+        -0.004085026364406801
+      ],
+      "gain_std": 0.006582085842261585,
+      "brier": 0.2549249206323496,
+      "repetition_rate": 0.0,
+      "final_mastery": 0.29819835779870807
+    }
+  },
+  "commit": "5ae706ddf1d63c65f7baff8350f359249583dcd5",
+  "working_tree_dirty": true
+}

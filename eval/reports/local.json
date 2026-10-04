@@ -1,0 +1,653 @@
+{
+  "generated_at": "2026-10-04T13:48:59.477146+05:30",
+  "git_revision": "90bb37e175d782e67cbb78121dec06aebd687ec1",
+  "dirty_worktree": false,
+  "pdf_sha256": "26816c2e423c52a3fbf46b07de94f8039ed9cf6a45e9de2bd08ea209aab82601",
+  "questions_sha256": "2dddaa46cc0d50121b43750eab19f2b7f24fa800d232bec091dd5fc0113b9ade",
+  "models": {
+    "ready": true,
+    "roles": {
+      "generator": {
+        "model": "gemma3:4b",
+        "ready": true,
+        "family": "gemma",
+        "size": "4.3B"
+      },
+      "verifier": {
+        "model": "qwen2.5:3b",
+        "ready": true,
+        "family": "qwen",
+        "size": "3.1B"
+      },
+      "embedding": {
+        "model": "nomic-embed-text",
+        "ready": true,
+        "family": "nomic-bert",
+        "size": "137M"
+      }
+    },
+    "local_only": true
+  },
+  "seconds": 857.937,
+  "method": "Gold regex correctness and document/page citation checks; manually review all rows. Gold-labelled in-scope and out-of-scope cases. No fake models or cloud calls.",
+  "metrics": {
+    "in_scope_answer_correctness": 1.0,
+    "in_scope_success_rate": 0.5714,
+    "citation_accuracy_against_gold_pages": 1.0,
+    "citation_coverage_for_answers": 1.0,
+    "out_of_scope_refusal_rate": 1.0,
+    "in_scope_refusal_rate": 0.4286,
+    "questions": 10,
+    "in_scope": 7,
+    "out_of_scope": 3,
+    "quiz_accepted": 2,
+    "quiz_rejected": 0
+  },
+  "questions": [
+    {
+      "id": "q1",
+      "question": "State Newton's first law.",
+      "in_scope": true,
+      "expected_pages": [
+        1
+      ],
+      "answer_patterns": [
+        "(?:rest|constant velocity|straight line)",
+        "(?:net|external).*force"
+      ],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": false,
+        "segments": [
+          {
+            "text": "Newton's first law: A body remains at rest or moves in a straight line at constant velocity unless a net external force acts on it.",
+            "citations": [
+              {
+                "unit_id": "d814a63b5e494c56b5e506cc2ead8895",
+                "document_id": "68d19bb59b7d4c63b7df8c4fccaab801",
+                "document_title": "sample.pdf",
+                "page": 1,
+                "label": "[p. 1]",
+                "url": "/api/documents/68d19bb59b7d4c63b7df8c4fccaab801/pages/1"
+              }
+            ]
+          }
+        ],
+        "answer": "Newton's first law: A body remains at rest or moves in a straight line at constant velocity unless a net external force acts on it. sample.pdf [p. 1]",
+        "attempts": 1,
+        "verification": "Independent local support check",
+        "generator": "gemma3:4b",
+        "verifier": "qwen2.5:3b"
+      },
+      "citation_count": 1,
+      "gold_page_citations": 1,
+      "seconds": 48.215
+    },
+    {
+      "id": "q2",
+      "question": "What is the net force on a 2 kg body accelerating at 4 m/s^2? Give the value and unit.",
+      "in_scope": true,
+      "expected_pages": [
+        1
+      ],
+      "answer_patterns": [
+        "(?:8|eight)\\s*(?:n\\b|newtons)"
+      ],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": false,
+        "segments": [
+          {
+            "text": "Net force equals mass times acceleration: F = m a. Force is measured in newtons (N), mass in kilograms (kg), and acceleration in metres per second squared (m/s^2). Result: 8 N.",
+            "citations": [
+              {
+                "unit_id": "d814a63b5e494c56b5e506cc2ead8895",
+                "document_id": "68d19bb59b7d4c63b7df8c4fccaab801",
+                "document_title": "sample.pdf",
+                "page": 1,
+                "label": "[p. 1]",
+                "url": "/api/documents/68d19bb59b7d4c63b7df8c4fccaab801/pages/1"
+              }
+            ]
+          }
+        ],
+        "answer": "Net force equals mass times acceleration: F = m a. Force is measured in newtons (N), mass in kilograms (kg), and acceleration in metres per second squared (m/s^2). Result: 8 N. sample.pdf [p. 1]",
+        "attempts": 1,
+        "verification": "Independent local support check",
+        "generator": "gemma3:4b",
+        "verifier": "qwen2.5:3b"
+      },
+      "citation_count": 1,
+      "gold_page_citations": 1,
+      "seconds": 51.848
+    },
+    {
+      "id": "q3",
+      "question": "According to Newton's third law, how do the interaction forces compare and do they act on the same body?",
+      "in_scope": true,
+      "expected_pages": [
+        1
+      ],
+      "answer_patterns": [
+        "equal",
+        "opposite",
+        "different"
+      ],
+      "correct_by_gold_patterns": false,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 3,
+        "verification_failures": [
+          "No complete, independently supported draft passed after three attempts"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 180.114
+    },
+    {
+      "id": "q4",
+      "question": "What kinetic energy does a 2 kg body moving at 3 m/s have? Give the value and unit.",
+      "in_scope": true,
+      "expected_pages": [
+        2
+      ],
+      "answer_patterns": [
+        "(?:9|nine)\\s*(?:j\\b|joules)"
+      ],
+      "correct_by_gold_patterns": false,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 1,
+        "verification_failures": [
+          "Generator declined to draft a supported answer"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 53.519
+    },
+    {
+      "id": "q5",
+      "question": "What momentum does a 2 kg body moving at 3 m/s have? Give the value and unit.",
+      "in_scope": true,
+      "expected_pages": [
+        2
+      ],
+      "answer_patterns": [
+        "(?:6|six)\\s*(?:kg|kilogram)"
+      ],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": false,
+        "segments": [
+          {
+            "text": "Linear momentum equals mass times velocity: p = m v. Its SI unit is kg m/s.\n\n\nWorked example: A 2 kg body moving at 3 m/s has momentum of 6 kg m/s. Result: 6 kg m/s.",
+            "citations": [
+              {
+                "unit_id": "ad9b5b8e382e49a4b56b62e302f0681a",
+                "document_id": "68d19bb59b7d4c63b7df8c4fccaab801",
+                "document_title": "sample.pdf",
+                "page": 2,
+                "label": "[p. 2]",
+                "url": "/api/documents/68d19bb59b7d4c63b7df8c4fccaab801/pages/2"
+              }
+            ]
+          }
+        ],
+        "answer": "Linear momentum equals mass times velocity: p = m v. Its SI unit is kg m/s.\n\n\nWorked example: A 2 kg body moving at 3 m/s has momentum of 6 kg m/s. Result: 6 kg m/s. sample.pdf [p. 2]",
+        "attempts": 1,
+        "verification": "Independent local support check",
+        "generator": "gemma3:4b",
+        "verifier": "qwen2.5:3b"
+      },
+      "citation_count": 1,
+      "gold_page_citations": 1,
+      "seconds": 91.644
+    },
+    {
+      "id": "q6",
+      "question": "How much work does a 10 N force do over a parallel displacement of 3 m? Give the value and unit.",
+      "in_scope": true,
+      "expected_pages": [
+        3
+      ],
+      "answer_patterns": [
+        "(?:30|thirty)\\s*(?:j\\b|joules)"
+      ],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": false,
+        "segments": [
+          {
+            "text": "When a constant force acts parallel to displacement, work equals force times displacement: W = F d. Work is measured in joules (J). Result: 30 J.",
+            "citations": [
+              {
+                "unit_id": "3922d577b1104789a8eeeeb681ec4f73",
+                "document_id": "68d19bb59b7d4c63b7df8c4fccaab801",
+                "document_title": "sample.pdf",
+                "page": 3,
+                "label": "[p. 3]",
+                "url": "/api/documents/68d19bb59b7d4c63b7df8c4fccaab801/pages/3"
+              }
+            ]
+          }
+        ],
+        "answer": "When a constant force acts parallel to displacement, work equals force times displacement: W = F d. Work is measured in joules (J). Result: 30 J. sample.pdf [p. 3]",
+        "attempts": 1,
+        "verification": "Independent local support check",
+        "generator": "gemma3:4b",
+        "verifier": "qwen2.5:3b"
+      },
+      "citation_count": 1,
+      "gold_page_citations": 1,
+      "seconds": 52.189
+    },
+    {
+      "id": "q7",
+      "question": "What is the average power for 30 J of work done in 6 seconds? Give the value and unit.",
+      "in_scope": true,
+      "expected_pages": [
+        3
+      ],
+      "answer_patterns": [
+        "(?:5|five)\\s*(?:w\\b|watts)"
+      ],
+      "correct_by_gold_patterns": false,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 1,
+        "verification_failures": [
+          "Generator declined to draft a supported answer"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 30.477
+    },
+    {
+      "id": "q8",
+      "question": "Which pizza should I order for dinner?",
+      "in_scope": false,
+      "expected_pages": [],
+      "answer_patterns": [],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 2,
+        "verification_failures": [
+          "Generator declined to draft a supported answer"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 87.944
+    },
+    {
+      "id": "q9",
+      "question": "Explain quantum entanglement and Bell's theorem.",
+      "in_scope": false,
+      "expected_pages": [],
+      "answer_patterns": [],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 1,
+        "verification_failures": [
+          "Generator declined to draft a supported answer"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 30.105
+    },
+    {
+      "id": "q10",
+      "question": "Who is the current prime minister of India?",
+      "in_scope": false,
+      "expected_pages": [],
+      "answer_patterns": [],
+      "correct_by_gold_patterns": true,
+      "result": {
+        "declined": true,
+        "reason": "Not enough evidence in this document",
+        "answer": "Not enough evidence in this document",
+        "segments": [],
+        "attempts": 1,
+        "verification_failures": [
+          "Generator declined to draft a supported answer"
+        ]
+      },
+      "citation_count": 0,
+      "gold_page_citations": 0,
+      "seconds": 28.151
+    }
+  ],
+  "quiz": {
+    "requested": 2,
+    "accepted": 2,
+    "rejected": 0,
+    "questions": [
+      {
+        "type": "mcq",
+        "stem": "According to Newton's third law, what is true about forces in an interaction?",
+        "options": [
+          {
+            "id": "A",
+            "text": "Forces in an interaction always cancel each other out completely."
+          },
+          {
+            "id": "B",
+            "text": "Forces in an interaction act on the same body."
+          },
+          {
+            "id": "C",
+            "text": "Forces in an interaction are equal in magnitude and opposite in direction."
+          },
+          {
+            "id": "D",
+            "text": "Forces in an interaction are measured in meters per second squared."
+          }
+        ],
+        "answer": "C",
+        "rationale": "Newton's third law states that forces in an interaction are equal in magnitude and opposite in direction. Option A is incorrect as forces do not always cancel. Option B is incorrect as they act on different bodies. Option D is incorrect as force is measured in newtons.",
+        "source_unit_ids": [
+          "d814a63b5e494c56b5e506cc2ead8895"
+        ],
+        "supporting_quotes": [
+          {
+            "source_unit_id": "d814a63b5e494c56b5e506cc2ead8895",
+            "quote": "Forces in an interaction are equal in magnitude and opposite in direction."
+          }
+        ],
+        "citations": [
+          {
+            "unit_id": "d814a63b5e494c56b5e506cc2ead8895",
+            "document_id": "68d19bb59b7d4c63b7df8c4fccaab801",
+            "document_title": "sample.pdf",
+            "page": 1,
+            "label": "[p. 1]",
+            "url": "/api/documents/68d19bb59b7d4c63b7df8c4fccaab801/pages/1",
+            "quote": "Forces in an interaction are equal in magnitude and opposite in direction."
+          }
+        ],
+        "verification": {
+          "blind_solve": "pass",
+          "source_support": "pass",
+          "quotes": "exact after whitespace normalization",
+          "generator": "gemma3:4b",
+          "verifier": "qwen2.5:3b"
+        }
+      },
+      {
+        "type": "short",
+        "stem": "A 2 kg body moves at 3 m/s. What is its kinetic energy?",
+        "options": [],
+        "answer": "9 J",
+        "rationale": "The text provides the formula E = (1/2) m v^2 and calculates the kinetic energy for a 2 kg body moving at 3 m/s as 9 J.",
+        "source_unit_ids": [
+          "ad9b5b8e382e49a4b56b62e302f0681a"
+        ],
+        "supporting_quotes": [
+          {
+            "source_unit_id": "ad9b5b8e382e49a4b56b62e302f0681a",
+            "quote": "Kinetic energy is the energy of motion. For a body of mass m moving at speed v, kinetic energy is E = (1/2) m v^2."
+          }
+        ],
+        "citations": [
+          {
+            "unit_id": "ad9b5b8e382e49a4b56b62e302f0681a",
+            "document_id": "68d19bb59b7d4c63b7df8c4fccaab801",
+            "document_title": "sample.pdf",
+            "page": 2,
+            "label": "[p. 2]",
+            "url": "/api/documents/68d19bb59b7d4c63b7df8c4fccaab801/pages/2",
+            "quote": "Kinetic energy is the energy of motion. For a body of mass m moving at speed v, kinetic energy is E = (1/2) m v^2."
+          }
+        ],
+        "verification": {
+          "blind_solve": "pass",
+          "source_support": "pass",
+          "quotes": "exact after whitespace normalization",
+          "generator": "gemma3:4b",
+          "verifier": "qwen2.5:3b"
+        }
+      }
+    ],
+    "rejections": [],
+    "rejection_summary": {}
+  },
+  "model_calls": [
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:4b",
+      "seconds": 37.534,
+      "input_tokens": 1047,
+      "output_tokens": 51
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 10.099,
+      "input_tokens": 467,
+      "output_tokens": 28
+    },
+    {
+      "role": "generator",
+      "schema": "NumericalDraft",
+      "model": "gemma3:4b",
+      "seconds": 36.023,
+      "input_tokens": 1172,
+      "output_tokens": 79
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 15.168,
+      "input_tokens": 505,
+      "output_tokens": 69
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:4b",
+      "seconds": 45.608,
+      "input_tokens": 1063,
+      "output_tokens": 61
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 12.066,
+      "input_tokens": 457,
+      "output_tokens": 41
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:4b",
+      "seconds": 34.069,
+      "input_tokens": 1101,
+      "output_tokens": 61
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 15.6,
+      "input_tokens": 457,
+      "output_tokens": 41
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:4b",
+      "seconds": 59.232,
+      "input_tokens": 1101,
+      "output_tokens": 61
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 12.436,
+      "input_tokens": 457,
+      "output_tokens": 41
+    },
+    {
+      "role": "generator",
+      "schema": "NumericalDraft",
+      "model": "gemma3:4b",
+      "seconds": 52.109,
+      "input_tokens": 1169,
+      "output_tokens": 22
+    },
+    {
+      "role": "generator",
+      "schema": "NumericalDraft",
+      "model": "gemma3:4b",
+      "seconds": 70.866,
+      "input_tokens": 1168,
+      "output_tokens": 91
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 15.886,
+      "input_tokens": 482,
+      "output_tokens": 63
+    },
+    {
+      "role": "generator",
+      "schema": "NumericalDraft",
+      "model": "gemma3:4b",
+      "seconds": 38.652,
+      "input_tokens": 1171,
+      "output_tokens": 68
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 12.462,
+      "input_tokens": 459,
+      "output_tokens": 29
+    },
+    {
+      "role": "generator",
+      "schema": "NumericalDraft",
+      "model": "gemma3:4b",
+      "seconds": 29.224,
+      "input_tokens": 1169,
+      "output_tokens": 22
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:4b",
+      "seconds": 34.682,
+      "input_tokens": 1048,
+      "output_tokens": 58
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 14.266,
+      "input_tokens": 448,
+      "output_tokens": 50
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:4b",
+      "seconds": 37.474,
+      "input_tokens": 1090,
+      "output_tokens": 52
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:4b",
+      "seconds": 26.909,
+      "input_tokens": 1049,
+      "output_tokens": 12
+    },
+    {
+      "role": "generator",
+      "schema": "Draft",
+      "model": "gemma3:4b",
+      "seconds": 26.164,
+      "input_tokens": 1049,
+      "output_tokens": 12
+    },
+    {
+      "role": "generator",
+      "schema": "MCQQuestion",
+      "model": "gemma3:4b",
+      "seconds": 69.18,
+      "input_tokens": 900,
+      "output_tokens": 229
+    },
+    {
+      "role": "verifier",
+      "schema": "Solve",
+      "model": "qwen2.5:3b",
+      "seconds": 30.294,
+      "input_tokens": 994,
+      "output_tokens": 75
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 13.85,
+      "input_tokens": 706,
+      "output_tokens": 46
+    },
+    {
+      "role": "generator",
+      "schema": "ShortQuestion",
+      "model": "gemma3:4b",
+      "seconds": 46.677,
+      "input_tokens": 869,
+      "output_tokens": 148
+    },
+    {
+      "role": "verifier",
+      "schema": "Solve",
+      "model": "qwen2.5:3b",
+      "seconds": 19.958,
+      "input_tokens": 902,
+      "output_tokens": 82
+    },
+    {
+      "role": "verifier",
+      "schema": "Verdict",
+      "model": "qwen2.5:3b",
+      "seconds": 15.43,
+      "input_tokens": 600,
+      "output_tokens": 81
+    }
+  ]
+}

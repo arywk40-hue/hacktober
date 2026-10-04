@@ -1,0 +1,114 @@
+"""Only complete, independently supported drafts reach the client."""
+
+import re
+
+from study.ingest import normalize, source_units
+from study.models import StructuredOutputError
+from study.retrieval import retrieve_evidence
+from study.schemas import Draft, NumericalDraft, Verdict
+
+REFUSAL = "Not enough evidence in this document"
+
+
+def evidence_payload(units):
+    return [{"id": u["id"], "text": u["text"], "page": u["locator"]["page"],
+             "document": u.get("document_title", "PDF")} for u in units]
+
+
+def parse_page_citations(text):
+    return [int(p) for p in re.findall(r"\[p\.\s*([1-9]\d*)\]", text)]
+
+
+def source_contains_quantity(quantity, units):
+    value = re.escape(f"{quantity.value:.15g}")
+    pattern = rf"(?<![\d.]){value}(?:\.0+)?\s*{re.escape(normalize(quantity.unit))}(?!\w)"
+    return any(re.search(pattern, normalize(u["text"]), re.I) for u in units)
+
+
+def citation(unit):
+    page = unit["locator"]["page"]
+    return {"unit_id": unit.get("stored_id", unit["id"]), "document_id": unit["source_id"],
+            "document_title": unit.get("document_title", "PDF"), "page": page,
+            "label": f"[p. {page}]", "url": f"/api/documents/{unit['source_id']}/pages/{page}"}
+
+
+def refuse(attempts=0, failures=None):
+    return {"declined": True, "reason": REFUSAL, "answer": REFUSAL, "segments": [],
+            "attempts": attempts, "verification_failures": failures or []}
+
+
+def answer(db, models, request, settings=None):
+    settings = settings or models.settings
+    units = source_units(db, request.subject_id, request.document_ids)
+    if not units:
+        return refuse()
+    retrieved = retrieve_evidence(units, request.message, models, settings)
+    # Short per-request IDs are losslessly mapped to authoritative stored chunks.
+    # They reduce model copying errors without letting a model invent citation targets.
+    prompt_units = [{**u, "stored_id": u["id"], "id": f"C{i + 1}"} for i, u in enumerate(retrieved)]
+    allowed = {u["id"]: u for u in prompt_units}
+    context = {"evidence": evidence_payload(prompt_units), "query": request.message,
+               "mode": request.mode, "explanation_style": request.style}
+    failures = []
+    numerical = request.mode != "hint" and bool(re.search(r"\bvalue\s+and\s+unit\b", request.message, re.I))
+    for attempt in range(1, 4):
+        try:
+            draft = models.structured("generator", NumericalDraft if numerical else Draft,
+                "Answer ALL requested parts using only evidence. If a value and unit are requested, explicitly "
+                "copy the worked result and its literal unit from the cited source into the quantity fields. "
+                "Numerical answers must be explicitly present in that source; do not perform new calculations. "
+                "The quantity must be the requested result, not an input value. Use quantity=null when refusing. "
+                "Return ONE concise answer paragraph, "
+                "without extra facts or unrequested derivations. "
+                "Cite the exact supplied "
+                "chunk ID (C1, C2, etc.) of the SINGLE best supporting chunk in the citations list. "
+                "Do not write page labels in text. "
+                "If evidence is insufficient, set answerable=false and segments=[]. "
+                "Mode explain asks for an explanation, mode hint asks for a helpful hint rather than a solution. "
+                "Explanation style changes wording only and is NEVER factual evidence.", context)
+            if not draft.answerable or not draft.segments:
+                return refuse(attempt, ["Generator declined to draft a supported answer"])
+            failures = []
+            if numerical and draft.quantity is None:
+                context["previous_failures"] = ["Include the numerical result and its unit, not just the formula"]
+                continue
+            for segment in draft.segments:
+                if (not segment.citations or any(c not in allowed for c in segment.citations)
+                        or "[p." in segment.text.casefold()):
+                    failures.append("Use an exact supplied chunk ID; do not write page labels in text")
+                    continue
+                cited = [allowed[c] for c in dict.fromkeys(segment.citations)]
+                if numerical and not source_contains_quantity(draft.quantity, cited):
+                    failures.append("The result and unit are absent from the cited chunk. Cite the actual "
+                                    "worked example or refuse if it is absent.")
+                    continue
+                # Include the typed result BEFORE checking support, never after verification.
+                if numerical:
+                    segment.text += f" Result: {draft.quantity.value:.15g} {draft.quantity.unit}."
+                verdict = models.structured("verifier", Verdict,
+                    "Check this answer using ONLY the cited evidence. supported=true requires EVERY claim "
+                    "to follow from that evidence and the answer to respond to the question. Reject "
+                    "contradictions, unsupported derivations, invented facts, and irrelevant answers. "
+                    "Simple arithmetic from explicit source values is allowed. If the question asks for a "
+                    "numerical value and unit, a formula alone is incomplete. For hint mode, a source-backed "
+                    "hint is sufficient. Give a short reason in one sentence.",
+                    {"evidence": evidence_payload(cited), "question": request.message,
+                     "answer": segment.text, "mode": request.mode})
+                if not verdict.supported:
+                    failures.append(verdict.reason)
+            if not failures:
+                checked = [{"text": s.text, "citations": [citation(allowed[c])
+                           for c in dict.fromkeys(s.citations)]} for s in draft.segments]
+                text = "\n\n".join(s["text"] + " " + " ".join(
+                    f"{c['document_title']} {c['label']}" for c in s["citations"]) for s in checked)
+                result = {"declined": False, "segments": checked, "answer": text, "attempts": attempt,
+                          "verification": "Independent local support check",
+                          "generator": models.roles["generator"], "verifier": models.roles["verifier"]}
+                with db.transaction() as session:
+                    db.add(session, "chat", request.subject_id,
+                           {"question": request.message, "result": result})
+                return result
+        except StructuredOutputError:
+            failures = ["Invalid structured draft or verification output"]
+        context["previous_failures"] = failures
+    return refuse(3, ["No complete, independently supported draft passed after three attempts"])

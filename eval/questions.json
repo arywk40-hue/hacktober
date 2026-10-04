@@ -1,0 +1,12 @@
+[
+  {"id":"q1","question":"State Newton's first law.","in_scope":true,"expected_pages":[1],"answer_patterns":["(?:rest|constant velocity|straight line)","(?:net|external).*force"]},
+  {"id":"q2","question":"What is the net force on a 2 kg body accelerating at 4 m/s^2? Give the value and unit.","in_scope":true,"expected_pages":[1],"answer_patterns":["(?:8|eight)\\s*(?:n\\b|newtons)"]},
+  {"id":"q3","question":"According to Newton's third law, how do the interaction forces compare and do they act on the same body?","in_scope":true,"expected_pages":[1],"answer_patterns":["equal","opposite","different"]},
+  {"id":"q4","question":"What kinetic energy does a 2 kg body moving at 3 m/s have? Give the value and unit.","in_scope":true,"expected_pages":[2],"answer_patterns":["(?:9|nine)\\s*(?:j\\b|joules)"]},
+  {"id":"q5","question":"What momentum does a 2 kg body moving at 3 m/s have? Give the value and unit.","in_scope":true,"expected_pages":[2],"answer_patterns":["(?:6|six)\\s*(?:kg|kilogram)"]},
+  {"id":"q6","question":"How much work does a 10 N force do over a parallel displacement of 3 m? Give the value and unit.","in_scope":true,"expected_pages":[3],"answer_patterns":["(?:30|thirty)\\s*(?:j\\b|joules)"]},
+  {"id":"q7","question":"What is the average power for 30 J of work done in 6 seconds? Give the value and unit.","in_scope":true,"expected_pages":[3],"answer_patterns":["(?:5|five)\\s*(?:w\\b|watts)"]},
+  {"id":"q8","question":"Which pizza should I order for dinner?","in_scope":false,"expected_pages":[],"answer_patterns":[]},
+  {"id":"q9","question":"Explain quantum entanglement and Bell's theorem.","in_scope":false,"expected_pages":[],"answer_patterns":[]},
+  {"id":"q10","question":"Who is the current prime minister of India?","in_scope":false,"expected_pages":[],"answer_patterns":[]}
+]
