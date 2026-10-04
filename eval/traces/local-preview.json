@@ -1,0 +1,498 @@
+{
+  "mode": "local preview; not delivered to Sentry",
+  "events": [
+    {
+      "type": "transaction",
+      "transaction": "CiteTutor tutor",
+      "transaction_info": {
+        "source": "custom"
+      },
+      "platform": "python",
+      "start_timestamp": "2026-10-04T09:41:34.743674Z",
+      "timestamp": "2026-10-04T09:43:55.594043Z",
+      "contexts": {
+        "trace": {
+          "op": "gen_ai.invoke_agent",
+          "description": "CiteTutor tutor",
+          "data": {
+            "gen_ai.agent.name": "CiteTutor",
+            "gen_ai.operation.name": "invoke_agent",
+            "citetutor.attempt": 1,
+            "citetutor.outcome": "answered",
+            "citetutor.attempts": 1
+          },
+          "trace_id": "9c3a552cde714794a57bb4dbb2ed6bc0",
+          "span_id": "951d8a2d3b957d7b"
+        }
+      },
+      "spans": [
+        {
+          "op": "gen_ai.execute_tool",
+          "description": "Hybrid retrieval",
+          "data": {
+            "gen_ai.operation.name": "execute_tool",
+            "gen_ai.tool.name": "Hybrid retrieval",
+            "citetutor.retrieved_count": 3
+          },
+          "trace_id": "9c3a552cde714794a57bb4dbb2ed6bc0",
+          "span_id": "b7f46cedbb1bac5f",
+          "parent_span_id": "951d8a2d3b957d7b",
+          "start_timestamp": "2026-10-04T09:41:34.749450Z",
+          "timestamp": "2026-10-04T09:41:35.230704Z"
+        },
+        {
+          "op": "gen_ai.embeddings",
+          "description": "Ollama embeddings",
+          "data": {
+            "gen_ai.operation.name": "embeddings",
+            "citetutor.role": "embedding",
+            "gen_ai.request.model": "nomic-embed-text",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.input_count": 1,
+            "gen_ai.usage.input_tokens": 34
+          },
+          "trace_id": "9c3a552cde714794a57bb4dbb2ed6bc0",
+          "span_id": "8843802a0a23bef3",
+          "parent_span_id": "b7f46cedbb1bac5f",
+          "start_timestamp": "2026-10-04T09:41:34.749518Z",
+          "timestamp": "2026-10-04T09:41:35.229336Z"
+        },
+        {
+          "op": "gen_ai.chat",
+          "description": "Ollama structured output",
+          "data": {
+            "gen_ai.operation.name": "chat",
+            "citetutor.role": "generator",
+            "gen_ai.request.model": "gemma3:4b",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.schema": "NumericalDraft",
+            "gen_ai.usage.input_tokens": 1175,
+            "gen_ai.usage.output_tokens": 79
+          },
+          "trace_id": "9c3a552cde714794a57bb4dbb2ed6bc0",
+          "span_id": "8cdd0dd6e8616fcb",
+          "parent_span_id": "951d8a2d3b957d7b",
+          "start_timestamp": "2026-10-04T09:41:35.230939Z",
+          "timestamp": "2026-10-04T09:43:37.390818Z"
+        },
+        {
+          "op": "gen_ai.chat",
+          "description": "Ollama structured output",
+          "data": {
+            "gen_ai.operation.name": "chat",
+            "citetutor.role": "verifier",
+            "gen_ai.request.model": "qwen2.5:3b",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.schema": "Verdict",
+            "gen_ai.usage.input_tokens": 510,
+            "gen_ai.usage.output_tokens": 71
+          },
+          "trace_id": "9c3a552cde714794a57bb4dbb2ed6bc0",
+          "span_id": "87d8f588753ab281",
+          "parent_span_id": "951d8a2d3b957d7b",
+          "start_timestamp": "2026-10-04T09:43:37.415532Z",
+          "timestamp": "2026-10-04T09:43:55.533860Z"
+        }
+      ],
+      "event_id": "7da758b455b14dea825d3554261a2e76"
+    },
+    {
+      "type": "transaction",
+      "transaction": "CiteTutor tutor",
+      "transaction_info": {
+        "source": "custom"
+      },
+      "platform": "python",
+      "start_timestamp": "2026-10-04T09:43:55.640435Z",
+      "timestamp": "2026-10-04T09:51:40.655892Z",
+      "contexts": {
+        "trace": {
+          "op": "gen_ai.invoke_agent",
+          "description": "CiteTutor tutor",
+          "data": {
+            "gen_ai.agent.name": "CiteTutor",
+            "gen_ai.operation.name": "invoke_agent",
+            "citetutor.attempt": 3,
+            "citetutor.outcome": "refused",
+            "citetutor.attempts": 3
+          },
+          "trace_id": "c4417942005b4993b4338aaba98c40b8",
+          "span_id": "b03d04d97f9ff6cf"
+        }
+      },
+      "spans": [
+        {
+          "op": "gen_ai.execute_tool",
+          "description": "Hybrid retrieval",
+          "data": {
+            "gen_ai.operation.name": "execute_tool",
+            "gen_ai.tool.name": "Hybrid retrieval",
+            "citetutor.retrieved_count": 3
+          },
+          "trace_id": "c4417942005b4993b4338aaba98c40b8",
+          "span_id": "92b1d479ecbad42d",
+          "parent_span_id": "b03d04d97f9ff6cf",
+          "start_timestamp": "2026-10-04T09:43:55.656007Z",
+          "timestamp": "2026-10-04T09:43:56.476862Z"
+        },
+        {
+          "op": "gen_ai.embeddings",
+          "description": "Ollama embeddings",
+          "data": {
+            "gen_ai.operation.name": "embeddings",
+            "citetutor.role": "embedding",
+            "gen_ai.request.model": "nomic-embed-text",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.input_count": 1,
+            "gen_ai.usage.input_tokens": 36
+          },
+          "trace_id": "c4417942005b4993b4338aaba98c40b8",
+          "span_id": "85550ae0ae4585c2",
+          "parent_span_id": "92b1d479ecbad42d",
+          "start_timestamp": "2026-10-04T09:43:55.656623Z",
+          "timestamp": "2026-10-04T09:43:56.473191Z"
+        },
+        {
+          "op": "gen_ai.chat",
+          "description": "Ollama structured output",
+          "data": {
+            "gen_ai.operation.name": "chat",
+            "citetutor.role": "generator",
+            "gen_ai.request.model": "gemma3:4b",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.schema": "NumericalDraft",
+            "gen_ai.usage.input_tokens": 1177,
+            "gen_ai.usage.output_tokens": 105
+          },
+          "trace_id": "c4417942005b4993b4338aaba98c40b8",
+          "span_id": "84ed6e81cfc85424",
+          "parent_span_id": "b03d04d97f9ff6cf",
+          "start_timestamp": "2026-10-04T09:43:56.476915Z",
+          "timestamp": "2026-10-04T09:46:59.506204Z"
+        },
+        {
+          "op": "gen_ai.execute_tool",
+          "description": "Draft rejected",
+          "data": {
+            "gen_ai.operation.name": "execute_tool",
+            "gen_ai.tool.name": "Draft rejected",
+            "citetutor.rejection": "unsupported_quantity",
+            "citetutor.attempt": 1
+          },
+          "trace_id": "c4417942005b4993b4338aaba98c40b8",
+          "span_id": "83039badb803f128",
+          "parent_span_id": "b03d04d97f9ff6cf",
+          "start_timestamp": "2026-10-04T09:46:59.538652Z",
+          "timestamp": "2026-10-04T09:46:59.550240Z"
+        },
+        {
+          "op": "gen_ai.chat",
+          "description": "Ollama structured output",
+          "data": {
+            "gen_ai.operation.name": "chat",
+            "citetutor.role": "generator",
+            "gen_ai.request.model": "gemma3:4b",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.schema": "NumericalDraft",
+            "gen_ai.usage.input_tokens": 1207,
+            "gen_ai.usage.output_tokens": 115
+          },
+          "trace_id": "c4417942005b4993b4338aaba98c40b8",
+          "span_id": "8c7f2d93973bb746",
+          "parent_span_id": "b03d04d97f9ff6cf",
+          "start_timestamp": "2026-10-04T09:46:59.551924Z",
+          "timestamp": "2026-10-04T09:48:57.321296Z"
+        },
+        {
+          "op": "gen_ai.execute_tool",
+          "description": "Draft rejected",
+          "data": {
+            "gen_ai.operation.name": "execute_tool",
+            "gen_ai.tool.name": "Draft rejected",
+            "citetutor.rejection": "unsupported_quantity",
+            "citetutor.attempt": 2
+          },
+          "trace_id": "c4417942005b4993b4338aaba98c40b8",
+          "span_id": "84ea7cde2d685764",
+          "parent_span_id": "b03d04d97f9ff6cf",
+          "start_timestamp": "2026-10-04T09:48:57.337419Z",
+          "timestamp": "2026-10-04T09:48:57.341608Z"
+        },
+        {
+          "op": "gen_ai.chat",
+          "description": "Ollama structured output",
+          "data": {
+            "gen_ai.operation.name": "chat",
+            "citetutor.role": "generator",
+            "gen_ai.request.model": "gemma3:4b",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.schema": "NumericalDraft",
+            "gen_ai.usage.input_tokens": 1207,
+            "gen_ai.usage.output_tokens": 115
+          },
+          "trace_id": "c4417942005b4993b4338aaba98c40b8",
+          "span_id": "84ce35d3b324a58c",
+          "parent_span_id": "b03d04d97f9ff6cf",
+          "start_timestamp": "2026-10-04T09:48:57.342625Z",
+          "timestamp": "2026-10-04T09:51:40.605963Z"
+        },
+        {
+          "op": "gen_ai.execute_tool",
+          "description": "Draft rejected",
+          "data": {
+            "gen_ai.operation.name": "execute_tool",
+            "gen_ai.tool.name": "Draft rejected",
+            "citetutor.rejection": "unsupported_quantity",
+            "citetutor.attempt": 3
+          },
+          "trace_id": "c4417942005b4993b4338aaba98c40b8",
+          "span_id": "9fc57a8541fdf633",
+          "parent_span_id": "b03d04d97f9ff6cf",
+          "start_timestamp": "2026-10-04T09:51:40.624852Z",
+          "timestamp": "2026-10-04T09:51:40.630299Z"
+        }
+      ],
+      "event_id": "8a9be5b5f7f34b259c1b22fd50373fd7"
+    },
+    {
+      "type": "transaction",
+      "transaction": "CiteTutor quiz",
+      "transaction_info": {
+        "source": "custom"
+      },
+      "platform": "python",
+      "start_timestamp": "2026-10-04T09:51:41.007266Z",
+      "timestamp": "2026-10-04T09:56:39.924234Z",
+      "contexts": {
+        "trace": {
+          "op": "gen_ai.invoke_agent",
+          "description": "CiteTutor quiz",
+          "data": {
+            "gen_ai.agent.name": "CiteTutor",
+            "gen_ai.operation.name": "invoke_agent",
+            "citetutor.outcome": "completed",
+            "citetutor.requested": 2,
+            "citetutor.accepted": 2,
+            "citetutor.rejected": 0
+          },
+          "trace_id": "88f17037398249b7ae7ac27e44027f55",
+          "span_id": "8fc1b8f029ddd96c"
+        }
+      },
+      "spans": [
+        {
+          "op": "gen_ai.chat",
+          "description": "Ollama structured output",
+          "data": {
+            "gen_ai.operation.name": "chat",
+            "citetutor.role": "generator",
+            "gen_ai.request.model": "gemma3:4b",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.schema": "MCQQuestion",
+            "gen_ai.usage.input_tokens": 900,
+            "gen_ai.usage.output_tokens": 229
+          },
+          "trace_id": "88f17037398249b7ae7ac27e44027f55",
+          "span_id": "9046e692707b2b93",
+          "parent_span_id": "8fc1b8f029ddd96c",
+          "start_timestamp": "2026-10-04T09:51:41.417718Z",
+          "timestamp": "2026-10-04T09:53:50.853014Z"
+        },
+        {
+          "op": "gen_ai.execute_tool",
+          "description": "Hybrid retrieval",
+          "data": {
+            "gen_ai.operation.name": "execute_tool",
+            "gen_ai.tool.name": "Hybrid retrieval",
+            "citetutor.retrieved_count": 3
+          },
+          "trace_id": "88f17037398249b7ae7ac27e44027f55",
+          "span_id": "9df1479b38532eda",
+          "parent_span_id": "8fc1b8f029ddd96c",
+          "start_timestamp": "2026-10-04T09:53:50.878299Z",
+          "timestamp": "2026-10-04T09:53:54.312531Z"
+        },
+        {
+          "op": "gen_ai.embeddings",
+          "description": "Ollama embeddings",
+          "data": {
+            "gen_ai.operation.name": "embeddings",
+            "citetutor.role": "embedding",
+            "gen_ai.request.model": "nomic-embed-text",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.input_count": 1,
+            "gen_ai.usage.input_tokens": 67
+          },
+          "trace_id": "88f17037398249b7ae7ac27e44027f55",
+          "span_id": "87ec560f10010146",
+          "parent_span_id": "9df1479b38532eda",
+          "start_timestamp": "2026-10-04T09:53:50.895237Z",
+          "timestamp": "2026-10-04T09:53:53.954815Z"
+        },
+        {
+          "op": "gen_ai.execute_tool",
+          "description": "Blind solve and support check",
+          "data": {
+            "gen_ai.operation.name": "execute_tool",
+            "gen_ai.tool.name": "Blind solve and support check"
+          },
+          "trace_id": "88f17037398249b7ae7ac27e44027f55",
+          "span_id": "92383edc601b778d",
+          "parent_span_id": "8fc1b8f029ddd96c",
+          "start_timestamp": "2026-10-04T09:53:54.313703Z",
+          "timestamp": "2026-10-04T09:54:39.699405Z"
+        },
+        {
+          "op": "gen_ai.chat",
+          "description": "Ollama structured output",
+          "data": {
+            "gen_ai.operation.name": "chat",
+            "citetutor.role": "verifier",
+            "gen_ai.request.model": "qwen2.5:3b",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.schema": "Solve",
+            "gen_ai.usage.input_tokens": 990,
+            "gen_ai.usage.output_tokens": 75
+          },
+          "trace_id": "88f17037398249b7ae7ac27e44027f55",
+          "span_id": "86dcffd969024134",
+          "parent_span_id": "92383edc601b778d",
+          "start_timestamp": "2026-10-04T09:53:54.317384Z",
+          "timestamp": "2026-10-04T09:54:22.411382Z"
+        },
+        {
+          "op": "gen_ai.chat",
+          "description": "Ollama structured output",
+          "data": {
+            "gen_ai.operation.name": "chat",
+            "citetutor.role": "verifier",
+            "gen_ai.request.model": "qwen2.5:3b",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.schema": "Verdict",
+            "gen_ai.usage.input_tokens": 709,
+            "gen_ai.usage.output_tokens": 46
+          },
+          "trace_id": "88f17037398249b7ae7ac27e44027f55",
+          "span_id": "8a387b04cfe138e4",
+          "parent_span_id": "92383edc601b778d",
+          "start_timestamp": "2026-10-04T09:54:22.442713Z",
+          "timestamp": "2026-10-04T09:54:39.697002Z"
+        },
+        {
+          "op": "gen_ai.chat",
+          "description": "Ollama structured output",
+          "data": {
+            "gen_ai.operation.name": "chat",
+            "citetutor.role": "generator",
+            "gen_ai.request.model": "gemma3:4b",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.schema": "ShortQuestion",
+            "gen_ai.usage.input_tokens": 869,
+            "gen_ai.usage.output_tokens": 148
+          },
+          "trace_id": "88f17037398249b7ae7ac27e44027f55",
+          "span_id": "8dbe4ff0e898aff0",
+          "parent_span_id": "8fc1b8f029ddd96c",
+          "start_timestamp": "2026-10-04T09:54:39.705602Z",
+          "timestamp": "2026-10-04T09:55:39.982790Z"
+        },
+        {
+          "op": "gen_ai.execute_tool",
+          "description": "Hybrid retrieval",
+          "data": {
+            "gen_ai.operation.name": "execute_tool",
+            "gen_ai.tool.name": "Hybrid retrieval",
+            "citetutor.retrieved_count": 3
+          },
+          "trace_id": "88f17037398249b7ae7ac27e44027f55",
+          "span_id": "83e24e33d66076f4",
+          "parent_span_id": "8fc1b8f029ddd96c",
+          "start_timestamp": "2026-10-04T09:55:39.992594Z",
+          "timestamp": "2026-10-04T09:55:43.024939Z"
+        },
+        {
+          "op": "gen_ai.embeddings",
+          "description": "Ollama embeddings",
+          "data": {
+            "gen_ai.operation.name": "embeddings",
+            "citetutor.role": "embedding",
+            "gen_ai.request.model": "nomic-embed-text",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.input_count": 1,
+            "gen_ai.usage.input_tokens": 21
+          },
+          "trace_id": "88f17037398249b7ae7ac27e44027f55",
+          "span_id": "871c633eb48c4a11",
+          "parent_span_id": "83e24e33d66076f4",
+          "start_timestamp": "2026-10-04T09:55:40.002632Z",
+          "timestamp": "2026-10-04T09:55:43.018889Z"
+        },
+        {
+          "op": "gen_ai.execute_tool",
+          "description": "Blind solve and support check",
+          "data": {
+            "gen_ai.operation.name": "execute_tool",
+            "gen_ai.tool.name": "Blind solve and support check"
+          },
+          "trace_id": "88f17037398249b7ae7ac27e44027f55",
+          "span_id": "9d40a97744088531",
+          "parent_span_id": "8fc1b8f029ddd96c",
+          "start_timestamp": "2026-10-04T09:55:43.024983Z",
+          "timestamp": "2026-10-04T09:56:39.614297Z"
+        },
+        {
+          "op": "gen_ai.chat",
+          "description": "Ollama structured output",
+          "data": {
+            "gen_ai.operation.name": "chat",
+            "citetutor.role": "verifier",
+            "gen_ai.request.model": "qwen2.5:3b",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.schema": "Solve",
+            "gen_ai.usage.input_tokens": 898,
+            "gen_ai.usage.output_tokens": 82
+          },
+          "trace_id": "88f17037398249b7ae7ac27e44027f55",
+          "span_id": "a838ca7c3c5230b6",
+          "parent_span_id": "9d40a97744088531",
+          "start_timestamp": "2026-10-04T09:55:43.025774Z",
+          "timestamp": "2026-10-04T09:56:13.000132Z"
+        },
+        {
+          "op": "gen_ai.chat",
+          "description": "Ollama structured output",
+          "data": {
+            "gen_ai.operation.name": "chat",
+            "citetutor.role": "verifier",
+            "gen_ai.request.model": "qwen2.5:3b",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.schema": "Verdict",
+            "gen_ai.usage.input_tokens": 600,
+            "gen_ai.usage.output_tokens": 80
+          },
+          "trace_id": "88f17037398249b7ae7ac27e44027f55",
+          "span_id": "b020f4345349612c",
+          "parent_span_id": "9d40a97744088531",
+          "start_timestamp": "2026-10-04T09:56:13.014482Z",
+          "timestamp": "2026-10-04T09:56:39.606645Z"
+        }
+      ],
+      "event_id": "0cdfc0a6c3b34bf292ca0e66d9651e91"
+    }
+  ]
+}

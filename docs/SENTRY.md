@@ -68,3 +68,8 @@ uv run --offline python -m scripts.trace_demo --preview
 in ignored `data/trace-preview.json`. It validates instrumentation without a Sentry account; it does not
 demonstrate live ingestion or establish a partner-category entry. Tests use in-memory transports and model
 fixtures to verify privacy, token metadata, three rejected drafts, quiz disagreement, and offline transport failure.
+
+An actual local-model preview is preserved in [eval/traces/local-preview.json](../eval/traces/local-preview.json).
+It recorded a verified answer in 140.85 seconds, a refusal after three `unsupported_quantity` rejections
+in 465.02 seconds, and two accepted quiz candidates in 298.92 seconds. These are SDK captures without
+live Sentry delivery; they show significant laptop latency, not an improvement caused by tracing.
