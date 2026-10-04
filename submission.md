@@ -6,6 +6,8 @@ tags: devchallenge, weekendchallenge, hf26challenge, ai
 
 > Unpublished draft. CiteTutor adapts pre-existing Course Companion code. The challenge FAQ excludes old projects; resolve eligibility with the organisers before presenting this adaptation as an eligible entry. Resetting history does not change when code was written. The video and exported screenshots remain pending.
 
+*This is a submission for the [Hacktoberfest Weekend Challenge: Build for a Friend](https://dev.to/challenges/hacktoberfest-weekend-2026-10-01)*
+
 ## What I Built
 
 I asked one college friend to try CiteTutor on a chapter from their own course material. They found it useful, but a little slow.
@@ -17,6 +19,8 @@ My friend can organise PDF notes and textbook chapters by subject, ask for an ex
 This is reported friend feedback, not a controlled study or measured learning improvement. Their name, chapter and notes stay private. Speed remains a usability problem to improve.
 
 ## Demo
+
+**Video demo: [ADD YOUR PUBLIC VIDEO LINK HERE]**
 
 **Recording and exported screenshots pending.** Replace this notice with an accessible video URL and actual captures before publishing. The [three-minute recording guide](https://github.com/arywk40-hue/hacktober/blob/main/docs/DEMO.md) is a shot list, not a finished demo.
 
@@ -67,6 +71,12 @@ The open components do the central work: nomic retrieves, Gemma drafts, Qwen che
 My friend's notes, questions and answers stay local. Optional Sentry tracing sends sanitized timing, token and outcome metadata; leave its DSN blank for fully local operation. Physical network-disconnection testing remains pending.
 
 Model roles are configurable and source checks are inspectable. We can change models for different hardware without handing the study policy to a provider. Model-specific licences apply; hardware and electricity still cost money. The current trade-off is visible: private local generation and verification take time.
+
+## My Agent Session
+
+I used Codex as a coding assistant for the CiteTutor adaptation, implementation, testing and documentation. I directed the scope and product choices, including running models locally, checking answers before display and keeping scan transcription subject to review.
+
+The [build log](https://github.com/arywk40-hue/hacktober/blob/main/BUILD_LOG.md) records decisions, failed experiments, actual evaluation results and verifier rejections. It is a development record, not an exported agent transcript. I have not published a DevRelay session; no session embed is claimed.
 
 ## Prize Categories
 

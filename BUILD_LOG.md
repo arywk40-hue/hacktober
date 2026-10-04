@@ -221,3 +221,10 @@ This log records development before and after the published branch's history cle
 - The review rated overall submission readiness about 7/10, with unfinished video/screenshots and a small evaluation limiting presentation/reliability evidence. Source grounding is common among study entries; CiteTutor should show its blind checks and rejected candidates rather than add features.
 - Earlier-code eligibility remains unresolved. The review contains an organiser question for the author to send; no message or DEV publication was sent. A repository/history reset is not evidence of fresh code. Actual media export, another chapter evaluation and the appropriate scan re-review remain outstanding.
 - Validation: whitespace check, local Markdown links, CSV uniqueness/counts and trace/evaluation claims checked against existing records and source. Documentation only; no runtime changes, new benchmark, model downloads or user study-data changes. Run remains ./run.sh; prior runtime test results are unchanged.
+
+
+## 2026-10-04 — Fill the official DEV template
+
+- Added the official challenge attribution, a clear pending-video placeholder and the optional My Agent Session section to submission.md, preserving the template order. Disclosed Codex assistance and linked the actual build log without claiming it is an exported DevRelay transcript.
+- Kept reported friend feedback, real measured results, partner roles, scan-review limits and earlier-code provenance. No video, screenshot export, agent-session upload, external message or DEV publication was invented or performed.
+- Validation: template headings/order, local links and whitespace checked. Documentation-only change; run remains ./run.sh and no runtime tests were rerun.
