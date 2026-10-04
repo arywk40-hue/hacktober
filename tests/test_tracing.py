@@ -1,6 +1,7 @@
 import json
 
 import httpx
+import pytest
 import sentry_sdk
 from conftest import FakeModels, pdf_bytes
 from fastapi.testclient import TestClient
@@ -53,6 +54,25 @@ def test_disabled_tracing_never_initializes_even_with_generic_sentry_dsn(monkeyp
     with tracing.request("tutor") as span:
         span.set_data("citetutor.outcome", "answered")
     assert tracing.status == "disabled" and tracing.client is None
+
+
+def test_failed_model_span_and_request_have_error_status_without_exception_payload():
+    transport = MemoryTransport()
+    tracing = Tracing(Settings(_env_file=None, sentry_dsn=TEST_DSN), transport=transport)
+    try:
+        with pytest.raises(RuntimeError, match=CANARY):
+            with tracing.request("tutor"):
+                with stage("gen_ai.chat", "Ollama structured output"):
+                    raise RuntimeError(CANARY)
+        event = transport.events[0]
+        assert event["contexts"]["trace"]["status"] == "internal_error"
+        assert event["contexts"]["trace"]["data"]["citetutor.outcome"] == "error"
+        assert event["spans"][0]["status"] == "internal_error"
+        assert event["spans"][0]["data"]["citetutor.outcome"] == "error"
+        assert CANARY not in transport.envelopes[0].serialize().decode()
+        assert "exception" not in event
+    finally:
+        tracing.close()
 
 
 def test_sdk_payload_allowlist_removes_content_scope_and_unexpected_spans():

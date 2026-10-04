@@ -98,6 +98,9 @@ class NullSpan:
     def set_data(self, key, value):
         pass
 
+    def set_status(self, status):
+        pass
+
 
 class MetadataTransport(Transport):
     """Last outbound boundary: no attachments, errors, or inherited envelope headers."""
@@ -176,6 +179,7 @@ class Tracing:
             yield span
         except Exception:
             span.set_data("citetutor.outcome", "error")
+            span.set_status("internal_error")
             raise
         finally:
             if not isinstance(span, NullSpan) and getattr(span, "sampled", False):
@@ -208,6 +212,10 @@ def stage(op, name):
             span = NullSpan()
     try:
         yield span
+    except Exception:
+        span.set_data("citetutor.outcome", "error")
+        span.set_status("internal_error")
+        raise
     finally:
         try:
             stack.close()

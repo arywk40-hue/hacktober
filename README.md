@@ -12,7 +12,7 @@ Open-weight models make the app work: **Gemma** drafts explanations and question
 | Ollama | Run all three models locally |
 | FastAPI, PyMuPDF, SQLite | Serve the UI, extract PDF text and store local study material |
 
-**Technology category target: Best Use of Gemma.** Gemma powers both generation paths; its installed model tag appears in `/api/health` and the live evaluation report. The [current category rules](https://dev.to/challenges/hacktoberfest-weekend-2026-10-01) include running Gemma locally. Optional **Sentry Agent Tracing** is implemented for timing, tokens, retries and rejections; its partner-category demonstration still needs confirmed live traces. This technology fit does not establish overall challenge eligibility or guarantee a prize. Entire and ElevenLabs are not integrated.
+**Technology category target: Best Use of Gemma.** Gemma powers both generation paths; its installed model tag appears in `/api/health` and the live evaluation report. The [current category rules](https://dev.to/challenges/hacktoberfest-weekend-2026-10-01) include running Gemma locally. Optional **Sentry Agent Tracing** is implemented for timing, tokens, retries and rejections; live delivery and the Gemma/Qwen spans have been confirmed in Sentry’s Agents view. This technology fit does not establish overall challenge eligibility or guarantee a prize. Entire and ElevenLabs are not integrated.
 
 ## Setup
 
@@ -95,8 +95,9 @@ uv run --offline python -m scripts.trace_demo --preview
 uv run --offline python -m scripts.trace_demo
 ```
 
-The demo uses only `eval/sample.pdf` in a temporary library. Local previews and tests demonstrate
-instrumentation; a live Sentry trace screenshot is still required as submission evidence.
+The demo uses only `eval/sample.pdf` in a temporary library. Live Sentry delivery has been confirmed for a verified sample answer; see
+[the sanitized trace evidence](eval/traces/live-delivery.json). Save the actual trace screenshot
+from the Agents view for the DEV post. Earlier local preview captures remain separate evidence.
 
 ## Tests and evaluation
 
@@ -107,7 +108,7 @@ node --check study/static/app.js
 uv run --offline python -m scripts.evaluate
 ```
 
-The **40 contract tests** cover chunk/page preservation, citation parsing, document scope, atomic indexing failures, bounded retries, guarded verification, blind solving, fabricated quotes, model-family enforcement, local-only configuration and Sentry privacy/transport boundaries. Test doubles validate boundaries; they do not establish model accuracy.
+The **41 contract tests** cover chunk/page preservation, citation parsing, document scope, atomic indexing failures, bounded retries, guarded verification, blind solving, fabricated quotes, model-family enforcement, local-only configuration and Sentry privacy/transport boundaries. Test doubles validate boundaries; they do not establish model accuracy.
 
 The evaluation runs **10 questions against real local models**: seven supported mechanics questions and three out-of-scope questions. It also generates a two-question mixed quiz. It reports gold-pattern answer correctness, in-scope success/refusal rates, citation accuracy against expected document/pages, out-of-scope refusal rate, quiz rejection counts, latency and token counts. See [eval/README.md](eval/README.md). Gold regex checks are a transparent heuristic; inspect the complete responses and source pages.
 

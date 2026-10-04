@@ -1,0 +1,114 @@
+{
+  "purpose": "Fresh real-model Sentry check on original sample PDF; local timeout 600s and output cap 256",
+  "checked_at": "2026-10-04T10:15:04.360551+00:00",
+  "summary": {
+    "request_status": 200,
+    "declined": false,
+    "attempts": 1,
+    "trace_id": "66ca5eb26d1a46708f0497e55d9757ff",
+    "citation_count": 1
+  },
+  "sentry_http_statuses": [
+    200
+  ],
+  "events": [
+    {
+      "type": "transaction",
+      "transaction": "CiteTutor tutor",
+      "transaction_info": {
+        "source": "custom"
+      },
+      "platform": "python",
+      "start_timestamp": "2026-10-04T10:10:52.299942Z",
+      "timestamp": "2026-10-04T10:15:03.908055Z",
+      "contexts": {
+        "trace": {
+          "op": "gen_ai.invoke_agent",
+          "description": "CiteTutor tutor",
+          "data": {
+            "gen_ai.agent.name": "CiteTutor",
+            "gen_ai.operation.name": "invoke_agent",
+            "citetutor.attempt": 1,
+            "citetutor.outcome": "answered",
+            "citetutor.attempts": 1
+          },
+          "trace_id": "66ca5eb26d1a46708f0497e55d9757ff",
+          "span_id": "89914e7b38313c5d"
+        }
+      },
+      "spans": [
+        {
+          "op": "gen_ai.execute_tool",
+          "description": "Hybrid retrieval",
+          "data": {
+            "gen_ai.operation.name": "execute_tool",
+            "gen_ai.tool.name": "Hybrid retrieval",
+            "citetutor.retrieved_count": 3
+          },
+          "trace_id": "66ca5eb26d1a46708f0497e55d9757ff",
+          "span_id": "946ca3d049ba05d7",
+          "parent_span_id": "89914e7b38313c5d",
+          "start_timestamp": "2026-10-04T10:10:52.325529Z",
+          "timestamp": "2026-10-04T10:10:52.781441Z"
+        },
+        {
+          "op": "gen_ai.embeddings",
+          "description": "Ollama embeddings",
+          "data": {
+            "gen_ai.operation.name": "embeddings",
+            "citetutor.role": "embedding",
+            "gen_ai.request.model": "nomic-embed-text",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.input_count": 1,
+            "gen_ai.usage.input_tokens": 13
+          },
+          "trace_id": "66ca5eb26d1a46708f0497e55d9757ff",
+          "span_id": "836b6cebd9e1f257",
+          "parent_span_id": "946ca3d049ba05d7",
+          "start_timestamp": "2026-10-04T10:10:52.325624Z",
+          "timestamp": "2026-10-04T10:10:52.780761Z"
+        },
+        {
+          "op": "gen_ai.chat",
+          "description": "Ollama structured output",
+          "data": {
+            "gen_ai.operation.name": "chat",
+            "citetutor.role": "generator",
+            "gen_ai.request.model": "gemma3:4b",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.schema": "Draft",
+            "gen_ai.usage.input_tokens": 1049,
+            "gen_ai.usage.output_tokens": 77
+          },
+          "trace_id": "66ca5eb26d1a46708f0497e55d9757ff",
+          "span_id": "8bb9096ab48adfa5",
+          "parent_span_id": "89914e7b38313c5d",
+          "start_timestamp": "2026-10-04T10:10:52.781587Z",
+          "timestamp": "2026-10-04T10:14:39.936359Z"
+        },
+        {
+          "op": "gen_ai.chat",
+          "description": "Ollama structured output",
+          "data": {
+            "gen_ai.operation.name": "chat",
+            "citetutor.role": "verifier",
+            "gen_ai.request.model": "qwen2.5:3b",
+            "gen_ai.system": "ollama",
+            "gen_ai.provider.name": "ollama",
+            "citetutor.schema": "Verdict",
+            "gen_ai.usage.input_tokens": 469,
+            "gen_ai.usage.output_tokens": 27
+          },
+          "trace_id": "66ca5eb26d1a46708f0497e55d9757ff",
+          "span_id": "8ae40fc1fed693f0",
+          "parent_span_id": "89914e7b38313c5d",
+          "start_timestamp": "2026-10-04T10:14:39.936899Z",
+          "timestamp": "2026-10-04T10:15:03.678552Z"
+        }
+      ],
+      "event_id": "6487af5d195b4327bc701b0a53dc203d"
+    }
+  ]
+}

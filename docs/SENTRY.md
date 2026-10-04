@@ -46,6 +46,30 @@ Token attributes are recorded only when Ollama supplies counts; embedding output
 No paid inference API is used; hardware/electricity costs are not measured and Sentry's inferred model costs
 should not be presented as a measured laptop cost.
 
+## Live verification on October 4
+
+The project DSN was configured in the ignored local `.env`; no DSN is committed. A content-free
+delivery check returned HTTP 200 and appeared in Traces. A fresh, verified sample answer also
+returned HTTP 200 from the tutor and Sentry transport, then appeared in **Agents → Traces** as
+`66ca5eb26d1a46708f0497e55d9757ff`. The inspected timeline showed all five spans and Gemma's input
+panel said **No input for this span**.
+
+The run took 251.61 seconds: Gemma 227.15 seconds with 1,049 input/77 output tokens, Qwen 23.74
+seconds with 469/27, and embeddings 0.46 seconds with 13 input tokens. A first live attempt
+returned a local-model 503 after about four minutes. The focused successful retry used a 600-second
+timeout and 256-token generation cap in a temporary library; production defaults remain unchanged.
+This highlights slow local generation, not a measured tracing improvement.
+
+The sanitized payload and HTTP delivery record are in
+[eval/traces/live-delivery.json](../eval/traces/live-delivery.json). A real Agents timeline screenshot
+was captured during setup; save/include that screen in the DEV post. The trace link requires your
+Sentry account, so a screenshot is useful for judges who cannot access your project.
+
+The onboarding page's **Waiting for error** is independent of AI trace ingestion. This integration
+intentionally drops error-event bodies and verifies tracing through Agents rather than injecting
+a division-by-zero exception. Failed spans now carry an `internal_error` status and fixed outcome
+metadata without transmitting exception text or stack locals.
+
 ## Privacy and local validation
 
 Automatic framework, HTTP, logging and error integrations are disabled. Error events, logs, profiles,
