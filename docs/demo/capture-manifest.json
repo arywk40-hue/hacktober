@@ -1,0 +1,61 @@
+{
+  "capture_date_local": "2026-10-05",
+  "images": [
+    {
+      "file": "app-library.png",
+      "width": 2488,
+      "height": 1700,
+      "sha256": "d7710e1aa2c21afbcebf2b60277149c8e35ceaaca800e8b830991991ff62198a",
+      "bytes": 331270
+    },
+    {
+      "file": "app-source-page.png",
+      "width": 2488,
+      "height": 1700,
+      "sha256": "98cc4719d8b7dfea1739a0a9324aca0d89efe5fea69f976742ef258ff45d1c58",
+      "bytes": 295996
+    },
+    {
+      "file": "app-verified-answer.png",
+      "width": 2488,
+      "height": 1700,
+      "sha256": "c6a4889dca46d837422aa9f01587e9e66e627aa47f313900f7c86056bd108ad4",
+      "bytes": 337157
+    },
+    {
+      "file": "app-verified-quiz.png",
+      "width": 2488,
+      "height": 1700,
+      "sha256": "505387c19439d0056cb8f2e0459dd398073d4df49047e793efe1060118d7d9f3",
+      "bytes": 313455
+    },
+    {
+      "file": "sentry-gemma-privacy.png",
+      "width": 2880,
+      "height": 1800,
+      "sha256": "75735f05db7df97fcbc7951bdbfa526aeb99f26fdaee35b0e6df458447621bde",
+      "bytes": 292545
+    },
+    {
+      "file": "sentry-ocr-privacy.png",
+      "width": 2528,
+      "height": 1740,
+      "sha256": "07c4dd3a7827889ce68819294cd0cee8bb49994d140f51fbd9816f97abc20375",
+      "bytes": 280024
+    },
+    {
+      "file": "sentry-refusal-waterfall.png",
+      "width": 2880,
+      "height": 1800,
+      "sha256": "2d083b4948a544b97cee84f0d46a14a99a71bb6609e2dd8215c0dcd0b268c164",
+      "bytes": 336975
+    },
+    {
+      "file": "sentry-tutor-waterfall.png",
+      "width": 2880,
+      "height": 1800,
+      "sha256": "f76f76f2e3442c9acc16da19f35a1bfa2abbd445ca230f33055eded22a3a9ed9",
+      "bytes": 294351
+    }
+  ]
+}

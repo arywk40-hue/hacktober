@@ -4,7 +4,7 @@ published: false
 tags: devchallenge, weekendchallenge, hf26challenge, ai
 ---
 
-<!-- Before publishing: replace the video placeholder and add actual Sentry dashboard screenshots. Resolve eligibility with the organisers; this adapts code written before the challenge window. -->
+<!-- Before publishing: replace the video placeholder. Actual Sentry dashboard captures are included below. Resolve eligibility with the organisers; this adapts code written before the challenge window. -->
 
 *This is a submission for the [Hacktoberfest Weekend Challenge: Build for a Friend](https://dev.to/challenges/hacktoberfest-weekend-2026-10-01)*
 
@@ -12,7 +12,7 @@ tags: devchallenge, weekendchallenge, hf26challenge, ai
 
 I asked one college friend to try CiteTutor on a chapter from their own course material. Their feedback was that it worked well, but was a little slow.
 
-They were right about the wait. In one measured request, Gemma spent 24.84 seconds drafting an answer, and two separate Qwen checks took another 20.48 seconds. My friend only saw the answer after those checks passed.
+They were right about the wait. In a separate measured mechanics-fixture request, Gemma spent 24.84 seconds drafting an answer, and two Qwen checks took another 20.48 seconds. CiteTutor displays an answer only after those checks pass.
 
 That is the design choice at the centre of CiteTutor: **check the explanation before the learner starts studying from it.**
 
@@ -28,7 +28,11 @@ These checks can still make mistakes. Their purpose is to give the learner an in
 
 **[ADD YOUR PUBLIC VIDEO LINK HERE]**
 
-<!-- Record/export the video before publishing. Do not describe the shot list as a finished demo. Add actual Sentry screenshots in Prize Categories. -->
+<!-- Record/export the video before publishing. Do not describe the shot list as a finished demo. -->
+
+![Actual CiteTutor answer to the mechanics fixture's force question, showing 8 N, a page 1 citation and the separate-model check.](https://raw.githubusercontent.com/arywk40-hue/hacktober/main/docs/demo/app-verified-answer.png)
+
+*Real local-app capture from October 5: the worked example returns 8 N with a clickable page citation. This rehearsal is separate from the ten-question evaluation below.*
 
 The [recording guide](https://github.com/arywk40-hue/hacktober/blob/main/docs/DEMO.md) covers the complete path: upload a sample PDF, ask a supported question, open its citation, show an unrelated question refusing, generate a quiz, review a scan, and inspect the corresponding Sentry stages.
 
@@ -71,6 +75,10 @@ Retrieval combines **BM25-style keyword ranking** and **cosine similarity over n
 
 This is a small local vector store: similarity is calculated in process. The embedding model's identity is stored so changing models cannot silently mix incompatible vectors.
 
+![Actual source-page dialog opened from the answer citation, showing the original page 1 text and the 8 N worked example.](https://raw.githubusercontent.com/arywk40-hue/hacktober/main/docs/demo/app-source-page.png)
+
+*Clicking the citation opens the stored source page, including the worked example used in this answer.*
+
 ### 2. Separate drafting from permission to display
 
 Gemma receives the retrieved evidence and returns answer segments with supplied chunk IDs. Ollama receives a **Pydantic-derived JSON Schema**, and the application validates the returned JSON again.
@@ -100,6 +108,10 @@ Gemma generates an MCQ or short-answer candidate with source IDs and supporting 
 The application then retrieves evidence again using the stem and options. Qwen sees that evidence and the question, but **no proposed key, rationale or generator-supplied quote**.
 
 MCQs require key agreement; short answers require semantic agreement. A separate support check also judges the proposed key and rationale against the source. Unsupported, ambiguous or disagreeing candidates are dropped, and the UI reports the rejected count.
+
+![Actual practice screen showing one verified question and one rejection for blind-solver key disagreement, with the accepted 9 J answer, source quote and page 2 citation.](https://raw.githubusercontent.com/arywk40-hue/hacktober/main/docs/demo/app-verified-quiz.png)
+
+*Fresh October 5 rehearsal: one candidate passed and one was rejected. The expanded answer includes its supporting quote and page citation; these are actual outputs, not staged data.*
 
 ### 4. Treat handwriting as evidence that needs review
 
@@ -173,7 +185,17 @@ An event/span field allowlist and a second filter at the SDK transport boundary 
 
 Sentry observes timing, tokens and outcomes. Source checks remain local.
 
-<!-- Insert actual exported Sentry dashboard screenshots here before publishing. -->
+![Actual Sentry Agent Activity screenshot showing the local Gemma drafting span, both Qwen verification calls, token counts and No input for this span.](https://raw.githubusercontent.com/arywk40-hue/hacktober/main/docs/demo/sentry-gemma-privacy.png)
+
+*Actual dashboard capture of the recorded 45.73-second tutor request. Gemma drafts for 24.84 seconds; Qwen performs the following checks. The input panel contains no model content.*
+
+![Actual Sentry refusal waterfall showing three Gemma drafts and three Draft rejected spans over a 1.66-minute request.](https://raw.githubusercontent.com/arywk40-hue/hacktober/main/docs/demo/sentry-refusal-waterfall.png)
+
+*Three drafts were rejected by source guards before Qwen ran. This is the preserved request from October 4, captured in the dashboard on October 5.*
+
+![Actual Sentry OCR span showing local glm-ocr:q8_0, 59.07 seconds, token counts and No input for this span.](https://raw.githubusercontent.com/arywk40-hue/hacktober/main/docs/demo/sentry-ocr-privacy.png)
+
+*The public glassboard transcription ran locally. Sentry shows timing and tokens, with no image or transcription input captured.*
 
 [Verified tutor traces](https://github.com/arywk40-hue/hacktober/blob/main/eval/traces/current-tutor-live.json), [OCR trace](https://github.com/arywk40-hue/hacktober/blob/main/eval/traces/ocr-live.json), and [Sentry setup/privacy details](https://github.com/arywk40-hue/hacktober/blob/main/docs/SENTRY.md) are in the repository.
 

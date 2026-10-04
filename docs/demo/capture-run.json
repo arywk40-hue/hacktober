@@ -1,0 +1,108 @@
+{
+  "capture_date_local": "2026-10-05",
+  "timezone": "Asia/Kolkata",
+  "purpose": "Actual public-fixture screenshot rehearsal; not a full evaluation",
+  "fixture": "eval/sample.pdf",
+  "fixture_sha256": "26816c2e423c52a3fbf46b07de94f8039ed9cf6a45e9de2bd08ea209aab82601",
+  "data_directory": "data/capture-demo (ignored isolated library)",
+  "sentry_enabled": false,
+  "records": [
+    {
+      "kind": "chat",
+      "completed_at_utc": "2026-10-04T19:38:28.273712Z",
+      "payload": {
+        "question": "What is the net force on a 2 kg body accelerating at 4 m/s²? Give the value and unit.",
+        "result": {
+          "declined": false,
+          "segments": [
+            {
+              "text": "Net force equals mass times acceleration: F = m a. Force is measured in newtons (N), mass in kilograms (kg), and acceleration in metres per\nsecond squared (m/s^2). Result: 8 N.",
+              "citations": [
+                {
+                  "unit_id": "14c2f7077f6b45a7a8e778b283415cd1",
+                  "document_id": "cfe4a3416fb649dda857269aa168c45a",
+                  "document_title": "sample.pdf",
+                  "page": 1,
+                  "label": "[p. 1]",
+                  "url": "/api/documents/cfe4a3416fb649dda857269aa168c45a/pages/1"
+                }
+              ]
+            }
+          ],
+          "answer": "Net force equals mass times acceleration: F = m a. Force is measured in newtons (N), mass in kilograms (kg), and acceleration in metres per\nsecond squared (m/s^2). Result: 8 N. sample.pdf [p. 1]",
+          "attempts": 1,
+          "verification": "Independent local support check",
+          "generator": "gemma3:4b",
+          "verifier": "qwen2.5:3b"
+        }
+      }
+    },
+    {
+      "kind": "quiz_run",
+      "completed_at_utc": "2026-10-04T19:46:07.181411Z",
+      "payload": {
+        "request": {
+          "subject_id": "e2bd54ff18a64db283c889138e43cabf",
+          "document_id": "cfe4a3416fb649dda857269aa168c45a",
+          "page_start": 1,
+          "page_end": 3,
+          "count": 2,
+          "types": [
+            "mcq",
+            "short"
+          ]
+        },
+        "result": {
+          "requested": 2,
+          "accepted": 1,
+          "rejected": 1,
+          "questions": [
+            {
+              "type": "short",
+              "stem": "A 2 kg body is moving at 3 m/s. What is the body’s kinetic energy?",
+              "options": [],
+              "answer": "9 J",
+              "rationale": "The source provides the formula for kinetic energy: E = (1/2) m v^2. Substituting m = 2 kg and v = 3 m/s yields E = (1/2) * 2 kg * (3 m/s)^2 = 9 J.",
+              "source_unit_ids": [
+                "6d952897374d4d44957ac094c494742c"
+              ],
+              "supporting_quotes": [
+                {
+                  "source_unit_id": "6d952897374d4d44957ac094c494742c",
+                  "quote": "Kinetic energy is the energy of motion. For a body of mass m moving at speed v, kinetic energy is E = (1/2) m v^2."
+                }
+              ],
+              "citations": [
+                {
+                  "unit_id": "6d952897374d4d44957ac094c494742c",
+                  "document_id": "cfe4a3416fb649dda857269aa168c45a",
+                  "document_title": "sample.pdf",
+                  "page": 2,
+                  "label": "[p. 2]",
+                  "url": "/api/documents/cfe4a3416fb649dda857269aa168c45a/pages/2",
+                  "quote": "Kinetic energy is the energy of motion. For a body of mass m moving at speed v, kinetic energy is E = (1/2) m v^2."
+                }
+              ],
+              "verification": {
+                "blind_solve": "pass",
+                "source_support": "pass",
+                "quotes": "exact after whitespace normalization",
+                "generator": "gemma3:4b",
+                "verifier": "qwen2.5:3b"
+              }
+            }
+          ],
+          "rejections": [
+            {
+              "candidate": 1,
+              "reason": "Blind solver disagreed with the answer key"
+            }
+          ],
+          "rejection_summary": {
+            "Blind solver disagreed with the answer key": 1
+          }
+        }
+      }
+    }
+  ]
+}

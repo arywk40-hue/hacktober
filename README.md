@@ -105,8 +105,8 @@ uv run --offline python -m scripts.trace_demo
 ```
 
 The demo uses only `eval/sample.pdf` in a temporary library. Live Sentry delivery has been confirmed for a verified sample answer; see
-[the sanitized trace evidence](eval/traces/live-delivery.json). Save the actual trace screenshot
-from the Agents view for the DEV post. Earlier local preview captures remain separate evidence.
+[the sanitized trace evidence](eval/traces/live-delivery.json). Actual current-pipeline Agents captures
+are saved in the [submission screenshot gallery](docs/demo/README.md). Earlier local preview captures remain separate evidence.
 
 ## Tests and evaluation
 

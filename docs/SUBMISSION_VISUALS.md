@@ -37,4 +37,4 @@ uv run --no-project --with matplotlib==3.10.7 python scripts/render_submission_f
 
 This may need a one-time package download. If Matplotlib is already installed, `python3 scripts/render_submission_figures.py` also works. Generation reads existing local reports; it does not call Ollama, send Sentry events or create a new benchmark.
 
-Before publishing, still add the finished video and actual Sentry dashboard captures. The earlier-code eligibility question is separate from the figures and remains unresolved.
+Actual app and Sentry dashboard captures are now saved in the [screenshot gallery](demo/README.md) and embedded in the draft. The finished video and earlier-code eligibility clarification remain pending.

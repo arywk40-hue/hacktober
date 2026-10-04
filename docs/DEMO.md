@@ -91,11 +91,11 @@ Scan setup: every scanned page must be checked and approved. Blank pages are del
 
 “The latest small mechanics evaluation answered seven supported questions with expected-page citations and refused three unrelated questions. One quiz candidate passed; one was rejected. Earlier failures remain in the repository. Open weights make the study pipeline private after setup, avoid paid inference APIs and let us swap models for different laptops.”
 
-Adapt wording to the actual recorded output. Do not claim friend feedback, handing over the app, universal handwriting accuracy, perfect factual verification, measured local inference cost, or a physically tested network disconnection unless there is evidence for those claims.
+Adapt wording to the actual recorded output. Use only the author-reported friend feedback: useful, but a little slow. Do not invent a course identity, learning gain or measured friend-session timing. Universal handwriting accuracy, perfect factual verification, measured local inference cost and a physically tested network disconnection have not been established.
 
 ## Sentry screenshots and captions
 
-Save actual screenshots in `docs/demo/` only after inspecting them for unrelated content; add real filenames to the post after capture. These are required captures, not fabricated screenshots:
+Actual inspected app and Sentry PNGs are now saved in the [screenshot gallery](demo/README.md) and embedded in `submission.md`. For the video, use the same evidence requirements:
 
 | Capture | Required visible evidence | Suggested caption |
 |---|---|---|
@@ -109,9 +109,9 @@ The preserved live trace `66ca5eb26d1a46708f0497e55d9757ff` predates the new tut
 
 A fresh real-model OCR SDK preview is preserved in [ocr-preview.json](../eval/traces/ocr-preview.json): 4,072 input tokens, 87 output tokens, 60.18 seconds total, with no image/text/filename in the envelope. It uses the credited public glassboard photo. This preview was captured locally and is not proof of live Sentry ingestion or a dashboard screenshot.
 
-Live OCR ingestion was also inspected in Sentry Traces and Agents: trace `9dd839e0c7304be8b77640221506af80`, 59.09 s root / 59.07 s model, 4,072 input / 87 output tokens. Agent Activity shows the local OCR model and **No input for this span**. The actual dashboard screenshot was captured in this chat, but has not been saved as a repository PNG. The verified metadata and account-gated trace URL are in [ocr-live.json](../eval/traces/ocr-live.json). Save the real capture for the post; judges cannot be assumed to have your Sentry access.
+Live OCR ingestion was also inspected in Sentry Traces and Agents: trace `9dd839e0c7304be8b77640221506af80`, 59.09 s root / 59.07 s model, 4,072 input / 87 output tokens. Agent Activity shows the local OCR model and **No input for this span**. The actual dashboard screenshot is now saved as [sentry-ocr-privacy.png](demo/sentry-ocr-privacy.png), captured on October 5. The verified metadata and account-gated trace URL are in [ocr-live.json](../eval/traces/ocr-live.json). The public PNG lets judges inspect the capture without Sentry account access.
 
-Current tutor evidence is also verified live in [current-tutor-live.json](../eval/traces/current-tutor-live.json). The supported sample request (`08998f10d6f341e9a9a95454c5de60ba`) passed on attempt one in **45.73 s**. Gemma's NumericalDraft took 24.84 s (1,215 input / 79 output tokens), followed by Qwen blind Solve in 9.68 s and support checking in 10.80 s. The input panel contains no model content. The outside-worked-evidence request (`e67e9be1c0db41d2b5fba5d2f9e24ae6`) refused after **three draft rejections**, with a 1.66-minute root. Its first fixed rejection code is `unsupported_quantity`; source guards blocked the drafts before Qwen. Real Gemma/privacy and rejection screenshots were captured in this chat, alongside the OCR screenshot; repository PNGs and video export remain pending.
+Current tutor evidence is also verified live in [current-tutor-live.json](../eval/traces/current-tutor-live.json). The supported sample request (`08998f10d6f341e9a9a95454c5de60ba`) passed on attempt one in **45.73 s**. Gemma's NumericalDraft took 24.84 s (1,215 input / 79 output tokens), followed by Qwen blind Solve in 9.68 s and support checking in 10.80 s. The input panel contains no model content. The outside-worked-evidence request (`e67e9be1c0db41d2b5fba5d2f9e24ae6`) refused after **three draft rejections**, with a 1.66-minute root. Its first fixed rejection code is `unsupported_quantity`; source guards blocked the drafts before Qwen. Real [Gemma/privacy](demo/sentry-gemma-privacy.png), [rejection](demo/sentry-refusal-waterfall.png) and OCR PNGs were saved on October 5. The dashboard requests are from October 4; video export remains pending.
 
 Rehearse focused stages with real models:
 
