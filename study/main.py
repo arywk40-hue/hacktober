@@ -10,7 +10,7 @@ from typing import Annotated
 
 import httpx
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import Field
 from sqlalchemy import delete
@@ -20,9 +20,9 @@ from sqlalchemy.orm.exc import StaleDataError
 from study.assessment import generate_quiz
 from study.config import Settings
 from study.db import Database, Record, public
-from study.ingest import ingest_pdf
+from study.ingest import ingest_pdf, page_image, review_document
 from study.models import ModelError, Models
-from study.schemas import ChatRequest, QuizRequest, Schema
+from study.schemas import ChatRequest, QuizRequest, ReviewRequest, Schema
 from study.tracing import Tracing, quiz_rejections
 from study.tutor import answer
 
@@ -108,9 +108,47 @@ def create_app(settings=None, model_client=None, tracing_client=None):
             return [public(s) for s in db.find(session, "source", subject_id)]
 
     @app.post("/api/documents", status_code=201)
-    def upload(subject_id: Annotated[str, Form()], file: Annotated[UploadFile, File()]):
+    def upload(subject_id: Annotated[str, Form()], file: Annotated[UploadFile, File()],
+               force_scan: Annotated[bool, Form()] = False):
         with study_operation():
-            return ingest_pdf(db, models, settings, subject_id, file)
+            return ingest_pdf(db, models, settings, subject_id, file, force_scan=force_scan)
+
+    @app.get("/api/documents/{document_id}/review")
+    def get_review(document_id: str):
+        with db.transaction() as session:
+            source = db.get(session, "source", document_id)
+            return {"document": public(source), "version": source.version,
+                    "pages": [p.payload for p in db.find(session, "page", document_id)
+                              if p.payload.get("extraction") == "local_ocr"]}
+
+    @app.post("/api/documents/{document_id}/review")
+    def approve_review(document_id: str, request: ReviewRequest):
+        with study_operation():
+            return review_document(db, models, document_id, request)
+
+    @app.get("/api/documents/{document_id}/pages/{page}/image")
+    def original_page(document_id: str, page: int):
+        with db.transaction() as session:
+            db.get(session, "source", document_id)
+        image = page_image(settings.data_dir / "sources" / document_id / "original.pdf", page)
+        return Response(image, media_type="image/png", headers={"Cache-Control": "no-store"})
+
+    @app.post("/api/documents/{document_id}/pages/{page}/ocr")
+    def read_page(document_id: str, page: int):
+        with study_operation():
+            with db.transaction() as session:
+                source = db.get(session, "source", document_id)
+                stored = next((p for p in db.find(session, "page", document_id) if p.key == str(page)), None)
+                if stored is None:
+                    raise LookupError("Page not found")
+                if source.payload["status"] != "needs_review" or stored.payload.get("reviewed", True):
+                    raise ValueError("This page does not need scan review")
+            image = page_image(settings.data_dir / "sources" / document_id / "original.pdf", page)
+            draft = models.transcribe(image)
+            with db.transaction() as session:
+                stored = db.get(session, "page", stored.id)
+                stored.payload = {**stored.payload, "text": draft.text, "ocr_model": settings.ocr_model}
+            return {"page": page, "text": draft.text, "reviewed": False}
 
     @app.get("/api/documents/{document_id}/pages/{page}")
     def page_text(document_id: str, page: int):

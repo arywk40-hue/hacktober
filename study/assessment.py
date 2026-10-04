@@ -53,7 +53,7 @@ def generate_quiz(db, models, request, settings):
             raise ValueError("Page range exceeds this PDF's page count")
     units = [u for u in units if request.page_start <= u["locator"]["page"] <= request.page_end]
     if not units:
-        raise ValueError("This page range contains no selectable source text")
+        raise ValueError("This page range contains no approved source text")
     accepted, rejected, stems = [], [], []
     for index in range(request.count):
         kind = request.types[index % len(request.types)]

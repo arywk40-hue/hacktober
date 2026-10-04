@@ -14,7 +14,7 @@ _active = ContextVar("citetutor_trace_active", default=False)
 NAMES = {
     "CiteTutor tutor", "CiteTutor quiz", "Ollama structured output", "Ollama embeddings",
     "Hybrid retrieval", "Blind solve and support check", "Draft rejected",
-    "Quiz candidate rejected",
+    "Quiz candidate rejected", "Ollama page transcription",
 }
 OPS = {"gen_ai.invoke_agent", "gen_ai.chat", "gen_ai.embeddings", "gen_ai.execute_tool"}
 LABELS = {
@@ -26,8 +26,9 @@ LABELS = {
                          "Draft rejected", "Quiz candidate rejected"},
     "gen_ai.request.model": {"gemma3:4b", "gemma3:1b", "qwen2.5:3b", "qwen2.5:1.5b",
                              "nomic-embed-text", "local-custom-model"},
-    "citetutor.role": {"generator", "verifier", "embedding"},
-    "citetutor.schema": {"Draft", "NumericalDraft", "Verdict", "MCQQuestion", "ShortQuestion", "Solve"},
+    "citetutor.role": {"generator", "verifier", "embedding", "ocr"},
+    "citetutor.schema": {"Draft", "NumericalDraft", "Verdict", "MCQQuestion", "ShortQuestion", "Solve",
+                         "Transcription"},
     "citetutor.outcome": {"answered", "refused", "completed", "error"},
     "citetutor.rejection": {"generator_declined", "missing_quantity", "invalid_citation",
                            "unsupported_quantity", "unsupported_answer", "invalid_schema",

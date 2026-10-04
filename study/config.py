@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     generator_model: str = "gemma3:4b"
     verifier_model: str = "qwen2.5:3b"
     embedding_model: str = "nomic-embed-text"
+    ocr_model: str = "gemma3:4b"
+    ocr_timeout: float = Field(default=600, gt=0, le=1800)
     data_dir: Path = Path("data")
     model_context: int = Field(default=4096, ge=4096, le=32768)
     model_max_tokens: int = Field(default=1000, ge=256, le=4096)
@@ -27,7 +29,7 @@ class Settings(BaseSettings):
                 or url.username or url.password or url.path not in {"", "/"}
                 or url.query or url.fragment):
             raise ValueError("Ollama must run at an HTTP loopback address on this laptop")
-        for tag in (self.generator_model, self.verifier_model, self.embedding_model):
+        for tag in (self.generator_model, self.verifier_model, self.embedding_model, self.ocr_model):
             if not tag.strip() or "cloud" in tag.casefold():
                 raise ValueError("Use installed local model weights, never cloud models")
         return self

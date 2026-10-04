@@ -7,6 +7,20 @@ class Schema(BaseModel):
     model_config = ConfigDict(extra="forbid", allow_inf_nan=False, str_strip_whitespace=True)
 
 
+class Transcription(Schema):
+    text: str = Field(max_length=12000)
+
+
+class ReviewedPage(Schema):
+    page: int = Field(ge=1, le=300)
+    text: str = Field(max_length=12000)
+
+
+class ReviewRequest(Schema):
+    version: int = Field(ge=1)
+    pages: list[ReviewedPage] = Field(min_length=1, max_length=20)
+
+
 class Segment(Schema):
     text: str = Field(min_length=1, max_length=2500)
     citations: list[str] = Field(min_length=1, max_length=1)
