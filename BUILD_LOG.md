@@ -228,3 +228,10 @@ This log records development before and after the published branch's history cle
 - Added the official challenge attribution, a clear pending-video placeholder and the optional My Agent Session section to submission.md, preserving the template order. Disclosed Codex assistance and linked the actual build log without claiming it is an exported DevRelay transcript.
 - Kept reported friend feedback, real measured results, partner roles, scan-review limits and earlier-code provenance. No video, screenshot export, agent-session upload, external message or DEV publication was invented or performed.
 - Validation: template headings/order, local links and whitespace checked. Documentation-only change; run remains ./run.sh and no runtime tests were rerun.
+
+## 2026-10-05 — Make the submission technically precise
+
+- Rewrote submission.md around the implemented local RAG architecture: page-preserving chunks, BM25-style/cosine retrieval with Reciprocal Rank Fusion, Pydantic-derived structured output, authoritative citation mapping, blind Qwen solving and separate support checks. Distinguished tutor checks from quiz key/quote validation and human-reviewed OCR.
+- Gave each installed model a clear role and explained the serial-inference/memory trade-off. Used the inspected 45.73-second Sentry trace to separate 24.84 seconds of Gemma drafting from 20.48 seconds of Qwen verification; retained the actual three-retry refusal and public OCR trace. Explained the metadata allowlist and transport filter without claiming that tracing improves accuracy.
+- Preserved reported friend feedback, the limited ten-question fixture, earlier failures, earlier-code provenance and unresolved eligibility. Kept the video placeholder and screenshot export checklist; no finished media, DevRelay transcript, DEV publication or broader benchmark is claimed.
+- Validation: checked architecture claims against retrieval, model, tutor, assessment and tracing code and existing evaluation/trace records. Checked template order, linked repository paths and whitespace. Documentation only; no runtime changes, fresh model tests, downloads or user-data changes. Run remains ./run.sh.
