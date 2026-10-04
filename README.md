@@ -4,6 +4,16 @@
 
 Open-weight models make the app work: **Gemma** drafts explanations and questions, **Qwen** verifies them, and **nomic-embed-text** powers semantic retrieval. All inference runs on your laptop through Ollama. No cloud API fallback.
 
+| Component | Actual role |
+|---|---|
+| `gemma3:4b` | Generate structured tutor answers, MCQs and short-answer questions |
+| `qwen2.5:3b` | Independently check source support and blindly solve quiz questions |
+| `nomic-embed-text` | Embed document chunks and study queries for local retrieval |
+| Ollama | Run all three models locally |
+| FastAPI, PyMuPDF, SQLite | Serve the UI, extract PDF text and store local study material |
+
+**Technology category target: Best Use of Gemma.** Gemma powers both generation paths; its installed model tag appears in `/api/health` and the live evaluation report. The [current category rules](https://dev.to/challenges/hacktoberfest-weekend-2026-10-01) include running Gemma locally. This technology fit does not establish overall challenge eligibility or guarantee a prize. Sentry, Entire, ElevenLabs and the other featured partner services are not integrated.
+
 ## Setup
 
 Requirements: Python **3.11–3.13**, [uv](https://docs.astral.sh/uv/), and [Ollama](https://ollama.com/). Install dependencies and pull local weights once while online:

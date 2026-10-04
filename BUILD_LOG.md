@@ -101,3 +101,12 @@ This log records development before and after the published branch's history cle
 - Abhishek's older change was fully reverted: the file-tree diff from `102b372` to `ce6b082` is empty. His author entries persisted because the imported history included his original, revert and merge commits. No retained code is being reassigned to a different author.
 - Kept current source, tests, local study data and historical evaluation reports. Updated documentation to distinguish the current snapshot from the backed-up history. Report revisions continue to identify the actual code used for those runs.
 - The snapshot uses the configured author and real current timestamp. Publication uses an explicit force-with-lease against the verified old tip, preventing an unexpected remote change from being overwritten.
+
+## 2026-10-04 — Document the meaningful Gemma integration
+
+- The author asked which partner technologies the project actually uses and to choose one prize category. Checked the current official weekend challenge page: local Gemma inference is a featured Best Use of Gemma route ($200 for its winner). Sentry Agent Tracing, Entire and ElevenLabs are separate $100 partner categories.
+- Verified the running app's `/api/health`: Gemma 3 4B generator, Qwen 2.5 3B verifier, nomic-embed-text embedding model; all installed local roles report ready.
+- Selected Gemma as the technology category target because it generates both tutor answers and quiz candidates in production. Added a component/role table to the README and specific code/runtime/report evidence to the DEV draft.
+- No additional service or telemetry was added. Local token/latency records and BUILD_LOG are not presented as a Sentry or Entire integration. Narration from ElevenLabs is not claimed.
+- This documentation change neither establishes overall eligibility for the adapted project nor promises a prize. The prior-work disclosure and measured quality limitations remain.
+- Validation: reviewed the actual generator call sites, running model metadata and official category requirements; checked diff whitespace. Application code is unchanged, so the existing 34-test results remain applicable. Run and test commands remain `./run.sh` and `uv run --offline python -m pytest -q`.

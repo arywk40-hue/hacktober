@@ -53,4 +53,10 @@ The models can be swapped and the verification policy can be inspected and chang
 
 ## Prize Categories
 
-Gemma is used locally as the generator. Best Use of Gemma is the relevant technology category, conditional on the entry meeting the challenge's eligibility requirements. No optional partner integration is claimed.
+**Best Use of Gemma** is the technology category target, conditional on the entry meeting the challenge's eligibility requirements. The [weekend category rules](https://dev.to/challenges/hacktoberfest-weekend-2026-10-01) explicitly include local Gemma inference.
+
+CiteTutor runs `gemma3:4b` through local Ollama for both central generation tasks: structured explanations grounded in retrieved PDF chunks, and MCQ/short-answer quiz candidates with source IDs and supporting quotes. Gemma supplies the answer and question drafts; Qwen, from a different model family, independently decides whether they pass. That separation lets us inspect and reject unreliable output while keeping document processing on the laptop.
+
+Evidence of the integration is in `study/tutor.py`, `study/assessment.py`, the model roles returned by `/api/health`, and the actual Gemma calls recorded in `eval/reports/local.json`. The demo should show the installed model tag, one cited answer, and a quiz's verified count and source quote. The measured false refusals and latency remain disclosed in the evaluation section above.
+
+This integration is local inference with downloaded open weights. No Sentry, Entire, ElevenLabs or other featured partner integration is claimed. Prize selection depends on a valid entry and judging; using Gemma alone does not guarantee an award.
