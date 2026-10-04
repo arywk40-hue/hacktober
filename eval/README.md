@@ -34,7 +34,10 @@ Reports:
 - `reports/lighter-first.partial.json`: interrupted early lighter-model run, retained for debugging. This is not a ten-question result.
 - `reports/concise-first.json`: complete 1B/3B run; five of seven supported answers correct, two incomplete numerical answers, and both quiz candidates rejected for schema failures.
 - `reports/larger-format.partial.json`: stopped 4B/3B run after five cases; exposed an exponent bypassing the number check and a wrong-page numerical citation. Not a full evaluation.
-- `reports/local.json`: latest completed full evaluation; review its model tags and timestamp.
+- `reports/local.json`: historical full evaluation before tutor blind reading; four of seven supported questions correct, three false refusals.
+- `reports/blind-reading.json`: revised full evaluation from clean revision `e9b43e4`; seven of seven supported questions correct, three out-of-scope refusals, one quiz accepted and one rejected for blind-solver/key disagreement.
+
+The separate [scan observations](SCAN_RESULTS.md) describe real handwritten notes and a glassboard photo, including recognition errors and an earlier incorrect accepted tutor answer. Full private note text is not published.
 
 For another PDF, supply a matching ten-case gold file:
 

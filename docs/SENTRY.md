@@ -40,6 +40,8 @@ and `CiteTutor quiz` (or search a printed trace ID). Capture the span waterfall 
 - tutor attempts/outcome and any `Draft rejected` spans with fixed rejection codes;
 - `Blind solve and support check`, quiz accepted/rejected counts, and any candidate rejection codes.
 
+The scan-review endpoint also emits `CiteTutor ocr` with an `Ollama page transcription` span and reported token/timing metadata. Its image, base64 payload and draft text are excluded. OCR privacy is covered by SDK-envelope tests; the live trace evidence below predates scan support and tutor blind reading.
+
 The integration uses [Sentry's manual tracing API](https://getsentry.github.io/sentry-python/api.html)
 and [AI attribute conventions](https://getsentry.github.io/sentry-conventions/attributes/gen_ai/).
 Token attributes are recorded only when Ollama supplies counts; embedding output tokens are not invented.
