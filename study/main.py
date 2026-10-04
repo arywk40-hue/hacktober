@@ -126,6 +126,20 @@ def create_app(settings=None, model_client=None, tracing_client=None):
         with study_operation():
             return review_document(db, models, document_id, request)
 
+    @app.post("/api/documents/{document_id}/review/reopen")
+    def reopen_review(document_id: str):
+        with study_operation(), db.transaction() as session:
+            source = db.get(session, "source", document_id)
+            pages = [p for p in db.find(session, "page", document_id)
+                     if p.payload.get("extraction") == "local_ocr"]
+            if source.payload["status"] != "ready" or not pages:
+                raise ValueError("Only an approved scan document can be reopened")
+            session.execute(delete(Record).where(Record.kind == "unit", Record.scope == document_id))
+            for page in pages:
+                page.payload = {**page.payload, "reviewed": False, "review": "pending"}
+            source.payload = {**source.payload, "status": "needs_review", "unit_count": 0}
+            return public(source)
+
     @app.get("/api/documents/{document_id}/pages/{page}/image")
     def original_page(document_id: str, page: int):
         with db.transaction() as session:
@@ -135,7 +149,7 @@ def create_app(settings=None, model_client=None, tracing_client=None):
 
     @app.post("/api/documents/{document_id}/pages/{page}/ocr")
     def read_page(document_id: str, page: int):
-        with study_operation():
+        with study_operation(), tracing.request("ocr") as span:
             with db.transaction() as session:
                 source = db.get(session, "source", document_id)
                 stored = next((p for p in db.find(session, "page", document_id) if p.key == str(page)), None)
@@ -147,8 +161,14 @@ def create_app(settings=None, model_client=None, tracing_client=None):
             draft = models.transcribe(image)
             with db.transaction() as session:
                 stored = db.get(session, "page", stored.id)
-                stored.payload = {**stored.payload, "text": draft.text, "ocr_model": settings.ocr_model}
-            return {"page": page, "text": draft.text, "reviewed": False}
+                stored.payload = {**stored.payload, "text": draft.text, "ocr_model": settings.ocr_model,
+                                  "ocr_incomplete": draft.incomplete}
+            span.set_data("citetutor.outcome", "completed")
+            return {"page": page, "text": draft.text, "reviewed": False, "incomplete": draft.incomplete,
+                    "warning": ("PARTIAL DRAFT: output was cut off or repeated. Add missing readable lines "
+                                "from the image, or exclude them. " if draft.incomplete else "") +
+                               "Check completeness, names, numbers and equations against the image. "
+                               "GLM-OCR stops at code fences to prevent repetitions; code may need manual entry."}
 
     @app.get("/api/documents/{document_id}/pages/{page}")
     def page_text(document_id: str, page: int):
@@ -205,7 +225,8 @@ def ensure_ollama(settings):
     settings.data_dir.mkdir(parents=True, exist_ok=True)
     log = (settings.data_dir / "ollama.log").open("a")
     proc = subprocess.Popen([executable, "serve"], stdout=log, stderr=log,
-                            env={**os.environ, "OLLAMA_HOST": settings.ollama_url, "OLLAMA_NO_CLOUD": "1"})
+                            env={**os.environ, "OLLAMA_HOST": settings.ollama_url, "OLLAMA_NO_CLOUD": "1",
+                                 "OLLAMA_FLASH_ATTENTION": "1", "OLLAMA_KV_CACHE_TYPE": "q8_0"})
     atexit.register(proc.terminate)
     for _ in range(40):
         if reachable():

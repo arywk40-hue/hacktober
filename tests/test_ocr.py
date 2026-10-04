@@ -52,7 +52,7 @@ def test_scan_stays_out_of_retrieval_until_all_pages_approved(context):
     units = source_units(app.state.db, subject, [doc["id"]])
     assert {u["locator"]["page"] for u in units} == {1, 2}
     page = client.get(f'/api/documents/{doc["id"]}/pages/2').json()
-    assert page["review"] == "human_approved" and page["ocr_model"] == "gemma3:4b"
+    assert page["review"] == "approved" and page["ocr_model"] == models.settings.ocr_model
     chat = client.post("/api/chat", json={"subject_id": subject, "document_ids": [doc["id"]],
                                          "message": "What defines force?"}).json()
     assert not chat["declined"] and chat["segments"][0]["citations"][0]["page"] in {1, 2}
@@ -60,6 +60,15 @@ def test_scan_stays_out_of_retrieval_until_all_pages_approved(context):
     image = client.get(f'/api/documents/{doc["id"]}/pages/2/image')
     assert image.status_code == 200 and image.headers["content-type"] == "image/png"
     assert client.get(f'/api/documents/{doc["id"]}/pages/0/image').status_code == 404
+    reopened = client.post(f'/api/documents/{doc["id"]}/review/reopen')
+    assert reopened.status_code == 200 and reopened.json()["status"] == "needs_review"
+    assert reopened.json()["unit_count"] == 0
+    assert not any(u["source_id"] == doc["id"] for u in source_units(app.state.db, subject))
+    review_again = client.get(f'/api/documents/{doc["id"]}/review').json()
+    assert review_again["version"] > review["version"]
+    assert review_again["pages"][0]["text"] == page["text"]
+    assert client.post(f'/api/documents/{doc["id"]}/review', json={
+        "version": review["version"], "pages": [{"page": 2, "text": "Stale text"}]}).status_code == 400
 
 
 @pytest.mark.parametrize("pages", [[], [{"page": 1, "text": "[unclear]"}],
@@ -96,9 +105,59 @@ def test_scan_limit_and_explicit_ocr_for_text_layer(tmp_path):
     assert not extract_pdf(path, allow_scans=True, force_scan=True)[0]["reviewed"]
 
 
+def test_dedicated_ocr_uses_task_prompt_and_bounded_plain_text(context):
+    settings = context[1].settings.model_copy(update={"ocr_model": "glm-ocr:q8_0"})
+    models = Models(settings)
+    calls = []
+
+    def respond(request):
+        body = json.loads(request.content)
+        calls.append(body)
+        if request.url.path == "/api/show":
+            return httpx.Response(200, json={"model_info": {"general.architecture": "glmocr"},
+                                            "capabilities": ["vision"]})
+        return httpx.Response(200, json={"response": r"$A_1$ has dimensions $10 \\times 100$"})
+
+    models.client.close()
+    models.client = httpx.Client(base_url=settings.ollama_url, transport=httpx.MockTransport(respond))
+    try:
+        assert "10" in models.transcribe(b"private scan").text
+        assert calls[-1]["prompt"] == "Text Recognition:"
+        assert "```" in calls[-1]["options"]["stop"]
+        assert "format" not in calls[-1] and calls[-1]["keep_alive"] == 0
+    finally:
+        models.close()
+
+
+def test_truncated_dedicated_ocr_is_marked_partial_and_never_auto_indexed(context):
+    client, _, subject, _, app = context
+    doc = upload_scan(context)
+    models = Models(context[1].settings.model_copy(update={"ocr_model": "glm-ocr:q8_0"}))
+    block = "Matrix A has dimensions 10 by 100. " * 4 + "\n"
+
+    def respond(request):
+        if request.url.path == "/api/show":
+            return httpx.Response(200, json={"model_info": {"general.architecture": "glmocr"},
+                                            "capabilities": ["vision"]})
+        return httpx.Response(200, json={"response": block * 3, "done_reason": "length"})
+
+    models.client.close()
+    models.client = httpx.Client(base_url=models.settings.ollama_url, transport=httpx.MockTransport(respond))
+    try:
+        context[1].transcribe = models.transcribe
+        response = client.post(f'/api/documents/{doc["id"]}/pages/1/ocr')
+        assert response.status_code == 200 and response.json()["incomplete"]
+        assert "PARTIAL DRAFT" in response.json()["warning"]
+        assert len(response.json()["text"]) < len(block * 3)
+        assert client.get(f'/api/documents/{doc["id"]}/review').json()["pages"][0]["ocr_incomplete"]
+        assert not any(u["source_id"] == doc["id"] for u in source_units(app.state.db, subject))
+    finally:
+        models.close()
+
+
 @pytest.mark.parametrize("vision, truncated", [(True, False), (False, False), (True, True)])
 def test_vision_gateway_capabilities_and_no_partial_transcription(context, vision, truncated):
-    settings = context[1].settings
+    settings = context[1].settings.model_copy(update={"ocr_model": "gemma3:4b"})
     models = Models(settings)
     calls = []
 

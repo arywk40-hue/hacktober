@@ -7,16 +7,17 @@ Open-weight models make the app work: **Gemma** drafts explanations and question
 | Component | Actual role |
 |---|---|
 | `gemma3:4b` | Generate structured tutor answers, MCQs and short-answer questions |
-| `qwen2.5:3b` | Independently check source support and blindly solve quiz questions |
+| `qwen2.5:3b` | Blindly answer tutor/quiz questions and independently check source support |
 | `nomic-embed-text` | Embed document chunks and study queries for local retrieval |
-| Ollama | Run all three models locally |
+| `glm-ocr:q8_0` | Draft scan transcriptions for review, including handwritten notes |
+| Ollama | Run all model roles locally |
 | FastAPI, PyMuPDF, SQLite | Serve the UI, extract PDF text and store local study material |
 
 **Technology category target: Best Use of Gemma.** Gemma powers both generation paths; its installed model tag appears in `/api/health` and the live evaluation report. The [current category rules](https://dev.to/challenges/hacktoberfest-weekend-2026-10-01) include running Gemma locally. Optional **Sentry Agent Tracing** is implemented for timing, tokens, retries and rejections; live delivery and the Gemma/Qwen spans have been confirmed in Sentry’s Agents view. This technology fit does not establish overall challenge eligibility or guarantee a prize. Entire and ElevenLabs are not integrated.
 
 ## Setup
 
-Requirements: Python **3.11–3.13**, [uv](https://docs.astral.sh/uv/), and [Ollama](https://ollama.com/). Install dependencies and pull local weights once while online:
+Requirements: Python **3.11–3.13**, [uv](https://docs.astral.sh/uv/), and a current [Ollama](https://ollama.com/) (scan path tested with 0.35.1). Install dependencies and pull local weights once while online:
 
 ```sh
 git clone https://github.com/arywk40-hue/hacktober.git
@@ -31,6 +32,8 @@ Leave `ollama serve` running and, in another terminal, pull the laptop defaults:
 ollama pull gemma3:4b
 ollama pull qwen2.5:3b
 ollama pull nomic-embed-text
+# For handwritten/image-only pages:
+ollama pull glm-ocr:q8_0
 ```
 
 If the Ollama desktop app already runs its server, skip `ollama serve`. These defaults were checked on an 8 GB Apple M1. Calls run serially and unload weights to limit memory use. Allow time for generation and verification; the faster 1B generator struggled with quiz quality and is not the recommended default.
@@ -56,7 +59,7 @@ Try [eval/sample.pdf](eval/sample.pdf), an original three-page mechanics fixture
 
 PDF pages → overlapping chunks with document/page identity → local embeddings in SQLite → keyword + cosine retrieval with reciprocal-rank fusion.
 
-**Tutor:** retrieve → structured segments with short chunk aliases → reject missing/unknown citations → another model checks factual support and relevance against the cited evidence. Concise answers currently use one paragraph and one supporting chunk to prevent unnecessary padding by the small generator. Aliases are resolved to authoritative stored chunks; models never choose page numbers. At most three complete drafts are attempted. Unverified drafts and partial passes are never streamed or displayed. If none passes:
+**Tutor:** retrieve → structured segments with short chunk aliases → reject missing/unknown citations → another model independently answers the question from cited text without seeing the draft → check draft support and agreement with that blind reading. Concise answers currently use one paragraph and one supporting chunk to prevent unnecessary padding by the small generator. Aliases are resolved to authoritative stored chunks; models never choose page numbers. At most three complete drafts are attempted. Unverified drafts and partial passes are never streamed or displayed. If none passes:
 
 > Not enough evidence in this document
 
@@ -76,7 +79,7 @@ Gemma is open-weight. Model and dependency licenses apply; “open-weight” doe
 
 Defaults work without `.env`. To customise, copy `.env.example` to `.env` and edit `CITETUTOR_GENERATOR_MODEL`, `CITETUTOR_VERIFIER_MODEL`, or `CITETUTOR_EMBEDDING_MODEL`. Pull chosen tags explicitly first. `CITETUTOR_OLLAMA_URL` must be an HTTP loopback address; remote endpoints and cloud model tags are rejected.
 
-`CITETUTOR_OCR_MODEL` defaults to the installed `gemma3:4b` vision weights, independently of the tutor generator. OCR requires the model's local `vision` capability. `CITETUTOR_OCR_TIMEOUT` defaults to 600 seconds per page. Drafts are not evidence: the entire document stays out of retrieval until all scanned pages are reviewed. Approval builds its index atomically. The factual verifier checks approved text, not the image; recognition mistakes can survive unless corrected during review.
+`CITETUTOR_OCR_MODEL` defaults to `glm-ocr:q8_0`, independently of the tutor generator. Pull its weights before reading scans; ordinary text PDFs need only the three study models. OCR requires the model's local `vision` capability. `CITETUTOR_OCR_TIMEOUT` defaults to 600 seconds per page. Drafts are not evidence: the entire document stays out of retrieval until all scanned pages are reviewed. Approval builds its index atomically. **Review again** keeps the PDF/text and removes its derived index until reapproval. The factual verifier checks approved text, not the image; recognition mistakes can survive unless corrected during review.
 
 Gemma 3 4B and Qwen 2.5 3B are the defaults after the smaller generator/verifier proved unreliable in our traces. Local model calls are serialised and weights unload after each call to limit RAM use. Requests can take time on laptops; the UI shows retrieval/verification progress. Only one study operation runs at a time; a concurrent operation gets a visible retry message.
 
@@ -110,11 +113,19 @@ node --check study/static/app.js
 uv run --offline python -m scripts.evaluate
 ```
 
-The **52 contract tests** cover chunk/page preservation, citation parsing, document scope, atomic indexing failures, bounded retries, guarded verification, blind solving, fabricated quotes, model-family enforcement, local-only configuration, scan review before retrieval, OCR capability/truncation checks and Sentry privacy/transport boundaries. Test doubles validate boundaries; they do not establish model accuracy.
+The **56 contract tests** cover chunk/page preservation, citation parsing, document scope, atomic indexing failures, bounded retries, guarded verification, blind solving, fabricated quotes, model-family enforcement, local-only configuration, scan review before retrieval, OCR capability/partial-draft checks and Sentry privacy/transport boundaries. Test doubles validate boundaries; they do not establish model accuracy.
 
 The evaluation runs **10 questions against real local models**: seven supported mechanics questions and three out-of-scope questions. It also generates a two-question mixed quiz. It reports gold-pattern answer correctness, in-scope success/refusal rates, citation accuracy against expected document/pages, out-of-scope refusal rate, quiz rejection counts, latency and token counts. See [eval/README.md](eval/README.md). Gold regex checks are a transparent heuristic; inspect the complete responses and source pages.
 
-The final run correctly answered **4/7 supported questions**, with correct-page citations for all four answers, and refused all three out-of-scope questions. It falsely refused three supported questions. Both mixed quiz candidates passed verification. These are small-fixture results, with material false refusals and laptop latency; see [measured results](eval/RESULTS.md) and [the full report](eval/reports/local.json).
+The earlier ten-question run, before the later tutor blind-reading check, correctly answered **4/7 supported questions**, with correct-page citations for all four answers, and refused all three out-of-scope questions. It falsely refused three supported questions. Both mixed quiz candidates passed verification. These are small-fixture results, with material false refusals and laptop latency; see [measured results](eval/RESULTS.md) and [the full report](eval/reports/local.json).
+
+Handwriting check: a real five-page college lecture PDF exposed omissions, misread subscripts/array names and repeated OCR output. Gemma was incomplete and Qwen-VL stalled; GLM-OCR produced usable review drafts with an explicit stop workaround. Long outputs remain clearly marked partial. After visual transcription corrections, the current tutor returned two supported answers with the expected pages and refused one unrelated question; two quiz candidates passed independent verification. A separate public glassboard photo yielded four visually matching text/formula items. See [scan test observations](eval/SCAN_RESULTS.md), including the earlier incorrect accepted answer. These are assisted transcription observations, not a measured handwriting accuracy score. Run a private check with:
+
+```sh
+uv run --offline python -m scripts.check_scans /path/to/notes.pdf
+```
+
+The output is saved under ignored `data/scan-check.json`, contains private note text, and is never automatically indexed. Compare every page with its original image. GLM-OCR can omit code after Markdown fences; enter missing readable lines or exclude them.
 
 The failed initial baseline is preserved in [eval/reports/baseline.json](eval/reports/baseline.json). Decisions, rejected candidates and earlier failures are recorded in [BUILD_LOG.md](BUILD_LOG.md).
 

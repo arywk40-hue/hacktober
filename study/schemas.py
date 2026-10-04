@@ -9,6 +9,7 @@ class Schema(BaseModel):
 
 class Transcription(Schema):
     text: str = Field(max_length=12000)
+    incomplete: bool = False
 
 
 class ReviewedPage(Schema):

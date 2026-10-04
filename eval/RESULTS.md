@@ -1,5 +1,7 @@
 # Measured local results
 
+This run predates the later tutor blind-reading check and scan support. It remains a historical result, not a measurement of the revised pipeline. See [scan test observations](SCAN_RESULTS.md) for the later real-note smoke check.
+
 Completed October 4, 2026 at 13:48 IST, on an 8 GB Apple M1. Production handlers used installed Gemma 3 4B, Qwen 2.5 3B and nomic-embed-text. The code revision was `90bb37e`; the worktree was clean when the run started. Full responses, model metadata, fixture hashes, timings and counts are in [reports/local.json](reports/local.json).
 
 The published branch was later reset to a current snapshot at the author's request. Evaluation revision IDs refer to the separately backed-up development history; the reports retain their original measurements and metadata.

@@ -5,7 +5,7 @@ import re
 from study.ingest import normalize, source_units
 from study.models import StructuredOutputError
 from study.retrieval import retrieve_evidence
-from study.schemas import Draft, NumericalDraft, Verdict
+from study.schemas import Draft, NumericalDraft, Solve, Verdict
 from study.tracing import record, rejection
 
 REFUSAL = "Not enough evidence in this document"
@@ -61,10 +61,11 @@ def answer(db, models, request, settings=None):
                 "Numerical answers must be explicitly present in that source; do not perform new calculations. "
                 "The quantity must be the requested result, not an input value. Use quantity=null when refusing. "
                 "Return ONE concise answer paragraph, "
-                "without extra facts or unrequested derivations. "
+                "Start with the direct answer to the requested question, without extra facts or unrequested "
+                "derivations. A definition/function question needs the meaning or purpose, not initialization. "
                 "Cite the exact supplied "
                 "chunk ID (C1, C2, etc.) of the SINGLE best supporting chunk in the citations list. "
-                "Do not write page labels in text. "
+                "Put source IDs only in the citations list, never in answer text. Do not write page labels in text. "
                 "If evidence is insufficient, set answerable=false and segments=[]. "
                 "Mode explain asks for an explanation, mode hint asks for a helpful hint rather than a solution. "
                 "Explanation style changes wording only and is NEVER factual evidence.", context)
@@ -91,15 +92,29 @@ def answer(db, models, request, settings=None):
                 # Include the typed result BEFORE checking support, never after verification.
                 if numerical:
                     segment.text += f" Result: {draft.quantity.value:.15g} {draft.quantity.unit}."
+                # Blind reading anchors relevance before this model sees the generator's draft.
+                solved = models.structured("verifier", Solve,
+                    "Answer this question using ONLY the evidence. No proposed answer is supplied. "
+                    "Give the directly requested meaning, purpose or result, not a related fact. "
+                    "For hint mode give a helpful hint. Set supported=false if evidence cannot answer it. "
+                    "Set unambiguous=false if the evidence does not resolve the question.",
+                    {"stem": request.message, "type": "short", "options": [],
+                     "evidence": evidence_payload(cited), "mode": request.mode})
+                if not solved.supported or not solved.unambiguous:
+                    rejection("unsupported_answer", attempt)
+                    failures.append("Independent source reading could not answer the requested question")
+                    continue
                 verdict = models.structured("verifier", Verdict,
                     "Check this answer using ONLY the cited evidence. supported=true requires EVERY claim "
                     "to follow from that evidence and the answer to respond to the question. Reject "
                     "contradictions, unsupported derivations, invented facts, and irrelevant answers. "
                     "Simple arithmetic from explicit source values is allowed. If the question asks for a "
                     "numerical value and unit, a formula alone is incomplete. For hint mode, a source-backed "
-                    "hint is sufficient. Give a short reason in one sentence.",
+                    "hint is sufficient. The proposed answer must answer the SAME requested information "
+                    "as the independent blind answer. A related fact or initialization in place of a meaning "
+                    "or purpose is insufficient. Give a short reason in one sentence.",
                     {"evidence": evidence_payload(cited), "question": request.message,
-                     "answer": segment.text, "mode": request.mode})
+                     "answer": segment.text, "blind_answer": solved.answer, "mode": request.mode})
                 if not verdict.supported:
                     rejection("unsupported_answer", attempt)
                     failures.append(verdict.reason)

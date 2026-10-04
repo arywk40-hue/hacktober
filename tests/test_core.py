@@ -111,6 +111,27 @@ def test_numeric_result_is_verified_before_display(context, monkeypatch):
     assert not result["declined"] and "Result: 8 N." in result["answer"]
 
 
+def test_tutor_blind_read_never_sees_draft_or_learner_style_and_can_block(context, monkeypatch):
+    from study.schemas import Solve
+
+    _, models, _, _, _ = context
+    original = models.structured
+    seen = []
+
+    def structured(role, schema, instruction, payload):
+        if schema is Solve:
+            assert role == "verifier"
+            assert not {"answer", "blind_answer", "explanation_style", "segments"} & payload.keys()
+            seen.append(payload)
+            return Solve(answer="", supported=False, unambiguous=False, reason="Cannot answer this question")
+        return original(role, schema, instruction, payload)
+
+    monkeypatch.setattr(models, "structured", structured)
+    result = ask(context).json()
+    assert result["declined"] and result["segments"] == [] and len(seen) == 3
+    assert not any(schema.__name__ == "Verdict" for _, schema, _ in models.calls)
+
+
 def test_numeric_result_missing_from_cited_source_never_passes(context, monkeypatch):
     from study.schemas import NumericalDraft
     _, models, _, _, _ = context

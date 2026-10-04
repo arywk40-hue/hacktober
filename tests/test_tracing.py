@@ -1,3 +1,4 @@
+import base64
 import json
 
 import httpx
@@ -54,6 +55,35 @@ def test_disabled_tracing_never_initializes_even_with_generic_sentry_dsn(monkeyp
     with tracing.request("tutor") as span:
         span.set_data("citetutor.outcome", "answered")
     assert tracing.status == "disabled" and tracing.client is None
+
+
+def test_ocr_trace_never_contains_image_bytes_or_transcribed_notes():
+    transport = MemoryTransport()
+    settings = Settings(_env_file=None, sentry_dsn=TEST_DSN, ocr_model="gemma3:4b")
+    tracing = Tracing(settings, transport=transport)
+    models = Models(settings)
+
+    def respond(request):
+        if request.url.path == "/api/show":
+            return httpx.Response(200, json={"model_info": {"general.architecture": "gemma3"},
+                                            "capabilities": ["vision"]})
+        return httpx.Response(200, json={"message": {"content": json.dumps({"text": CANARY})},
+                                        "prompt_eval_count": 375, "eval_count": 23})
+
+    models.client.close()
+    models.client = httpx.Client(base_url=settings.ollama_url, transport=httpx.MockTransport(respond))
+    try:
+        with tracing.request("ocr"):
+            assert models.transcribe(CANARY.encode()).text == CANARY
+        serialized = transport.envelopes[0].serialize().decode()
+        assert CANARY not in serialized and base64.b64encode(CANARY.encode()).decode() not in serialized
+        span = transport.events[0]["spans"][0]
+        assert span["description"] == "Ollama page transcription"
+        assert span["data"]["citetutor.role"] == "ocr"
+        assert span["data"]["gen_ai.usage.input_tokens"] == 375
+    finally:
+        models.close()
+        tracing.close()
 
 
 def test_failed_model_span_and_request_have_error_status_without_exception_payload():

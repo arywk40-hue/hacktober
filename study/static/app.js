@@ -25,7 +25,7 @@ function requireDocuments() {
 }
 function setBusy(value) {
   state.busy = value;
-  for (const element of document.querySelectorAll('#upload-submit, #chat-submit, #quiz-submit, #subject-select, #new-subject, #study-document, #quiz-document, .delete-document, [data-review], #review-page, #read-page, #review-text, #review-checked, #approve-review')) element.disabled = value;
+  for (const element of document.querySelectorAll('#upload-submit, #chat-submit, #quiz-submit, #subject-select, #new-subject, #study-document, #quiz-document, .delete-document, [data-review], [data-reopen], #review-page, #read-page, #review-text, #review-checked, #approve-review')) element.disabled = value;
 }
 async function perform(action) {
   if (state.busy) return;
@@ -57,7 +57,7 @@ async function loadDocuments() {
   $('#document-count').textContent = documents.length;
   $('#page-count').textContent = documents.reduce((sum, doc) => sum + doc.page_count, 0);
   $('#source-total').textContent = documents.length;
-  $('#documents').innerHTML = documents.length ? documents.map(doc => `<article class="document-card"><span class="pdf-icon">PDF</span><div class="document-info"><h3>${esc(doc.title)}</h3><p>${doc.page_count} pages · ${doc.unit_count} source chunks${doc.status === 'needs_review' ? ` · ${doc.ocr_pages.length} scans to review` : doc.blank_pages.length ? ` · ${doc.blank_pages.length} page(s) excluded` : ''}</p></div>${doc.status === 'needs_review' ? `<button class="secondary" data-review="${esc(doc.id)}">Review scans</button>` : '<span class="ready-tag">Ready to study</span>'}<button class="delete-document" data-delete="${esc(doc.id)}" aria-label="Remove ${esc(doc.title)}">Remove</button></article>`).join('') : `<div class="empty-state">${state.subject ? 'Your desk is ready. Add a PDF to start studying.' : 'Create a subject to add your first PDF.'}</div>`;
+  $('#documents').innerHTML = documents.length ? documents.map(doc => `<article class="document-card"><span class="pdf-icon">PDF</span><div class="document-info"><h3>${esc(doc.title)}</h3><p>${doc.page_count} pages · ${doc.unit_count} source chunks${doc.status === 'needs_review' ? ` · ${doc.ocr_pages.length} scans to review` : doc.blank_pages.length ? ` · ${doc.blank_pages.length} page(s) excluded` : ''}</p></div>${doc.status === 'needs_review' ? `<button class="secondary" data-review="${esc(doc.id)}">Review scans</button>` : `<span class="ready-tag">Ready to study</span>${doc.ocr_pages?.length ? `<button class="secondary" data-reopen="${esc(doc.id)}">Review again</button>` : ''}`}<button class="delete-document" data-delete="${esc(doc.id)}" aria-label="Remove ${esc(doc.title)}">Remove</button></article>`).join('') : `<div class="empty-state">${state.subject ? 'Your desk is ready. Add a PDF to start studying.' : 'Create a subject to add your first PDF.'}</div>`;
   const ready = documents.filter(doc => doc.status === 'ready');
   const options = ready.map(doc => `<option value="${esc(doc.id)}">${esc(doc.title)}</option>`).join('');
   const previousStudy = $('#study-document').value;
@@ -123,6 +123,16 @@ $('#upload-form').onsubmit = event => {
 };
 $('#refresh').onclick = () => { if (!state.busy) perform(loadDocuments); };
 $('#documents').onclick = event => {
+  const reopen = event.target.closest('[data-reopen]');
+  if (reopen && !state.busy) {
+    if (!window.confirm('Reopen scan review? This PDF will leave Study and Practice until you approve its text again. The original PDF and current text are kept.')) return;
+    perform(async () => {
+      await post(`/documents/${reopen.dataset.reopen}/review/reopen`, {});
+      $('#conversation').innerHTML = '<div class="empty-state">Source review changed. Ask a new question after approval.</div>';
+      $('#quiz-results').replaceChildren(); $('#quiz-summary').hidden = true; state.questions = [];
+      await loadDocuments(); await openReview(reopen.dataset.reopen);
+    }); return;
+  }
   const review = event.target.closest('[data-review]');
   if (review && !state.busy) { perform(() => openReview(review.dataset.review)); return; }
   const button = event.target.closest('[data-delete]');
@@ -154,6 +164,7 @@ function renderReview() {
   $('#review-text').value = page.text;
   $('#review-checked').checked = review.checked.has(page.page);
   $('#review-progress').textContent = `${review.checked.size}/${review.pages.length} scanned pages checked`;
+  $('#review-status').textContent = page.ocr_incomplete ? 'PARTIAL DRAFT: add missing readable lines from the image or exclude them. Nothing is indexed until you approve all pages.' : 'Check every line against the image. Local drafts may omit text or misread numbers and equations. Read this page locally, or enter the visible text yourself.';
 }
 $('#review-page').onchange = () => { state.review.index = Number($('#review-page').value); renderReview(); };
 $('#review-text').oninput = () => {
@@ -171,13 +182,14 @@ $('#review-checked').onchange = () => {
 $('#read-page').onclick = () => perform(async () => {
   const review = state.review, page = review.pages[review.index];
   if (page.text && !window.confirm('Replace this page’s draft and your edits with a new local transcription?')) return;
-  $('#review-status').textContent = 'Reading this page with local Gemma… Allow a few minutes on a laptop.';
+  $('#review-status').textContent = 'Reading this page with your local OCR model… Allow a few minutes on a laptop.';
   try {
     const draft = await post(`/documents/${review.document.id}/pages/${page.page}/ocr`, {});
     page.text = draft.text;
+    page.ocr_incomplete = draft.incomplete;
     review.checked.delete(page.page);
     renderReview();
-    $('#review-status').textContent = 'Unverified draft. Check every line, especially numbers and equations. Correct mistakes or remove unreadable lines.';
+    $('#review-status').textContent = `Unverified draft. ${draft.warning || 'Check every line against the image.'} Correct mistakes or remove unreadable lines.`;
   } catch (error) { $('#review-status').textContent = error.message; throw error; }
 });
 $('#approve-review').onclick = () => perform(async () => {
@@ -233,7 +245,7 @@ document.addEventListener('click', async event => {
     $('#source-title').textContent = `${page.title} · Page ${page.page}`;
     $('#source-text').textContent = page.text || 'This page contains no approved text.';
     if (page.extraction === 'local_ocr') {
-      $('#source-provenance').textContent = 'Human-reviewed scan transcription. Verification checks this text; compare it with the original page below.';
+      $('#source-provenance').textContent = 'Approved scan transcription. Verification checks this text; compare it with the original page below.';
       $('#source-image').src = `/api/documents/${link.dataset.source}/pages/${page.page}/image`;
       $('#source-image').alt = `Original PDF page ${page.page}`; $('#source-image').hidden = false;
     }
@@ -282,7 +294,7 @@ async function health() {
   const tracingOn = response.tracing?.status === 'enabled';
   $('.privacy-label').textContent = tracingOn ? '◉ Local AI · Sentry metadata' : '◉ Local & private';
   $('.privacy-label').title = tracingOn ? 'Sentry receives timings, token counts and rejection codes. Notes and answers stay local.' : 'Models and documents stay local. Sentry tracing is off.';
-  $('#model-status').textContent = response.models.ready ? 'All models ready' : 'Setup needed';
+  $('#model-status').textContent = response.models.ready ? (response.models.roles.ocr?.ready === false ? 'Study models ready · OCR setup needed' : 'All models ready') : 'Setup needed';
   $('#models').innerHTML = Object.entries(response.models.roles).map(([role, model]) => `<p><span>${esc(role)}</span><code>${esc(model.model)}</code><span>${model.ready ? 'Ready' : esc(model.error)}</span></p>`).join('');
 }
 Promise.all([loadSubjects(), health()]).catch(error => notice(error.message, true));

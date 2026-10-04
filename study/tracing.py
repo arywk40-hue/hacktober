@@ -12,7 +12,7 @@ from sentry_sdk.transport import HttpTransport, Transport
 
 _active = ContextVar("citetutor_trace_active", default=False)
 NAMES = {
-    "CiteTutor tutor", "CiteTutor quiz", "Ollama structured output", "Ollama embeddings",
+    "CiteTutor tutor", "CiteTutor quiz", "CiteTutor ocr", "Ollama structured output", "Ollama embeddings",
     "Hybrid retrieval", "Blind solve and support check", "Draft rejected",
     "Quiz candidate rejected", "Ollama page transcription",
 }
@@ -25,7 +25,7 @@ LABELS = {
     "gen_ai.tool.name": {"Hybrid retrieval", "Blind solve and support check",
                          "Draft rejected", "Quiz candidate rejected"},
     "gen_ai.request.model": {"gemma3:4b", "gemma3:1b", "qwen2.5:3b", "qwen2.5:1.5b",
-                             "nomic-embed-text", "local-custom-model"},
+                             "nomic-embed-text", "qwen2.5vl:3b", "glm-ocr:q8_0", "local-custom-model"},
     "citetutor.role": {"generator", "verifier", "embedding", "ocr"},
     "citetutor.schema": {"Draft", "NumericalDraft", "Verdict", "MCQQuestion", "ShortQuestion", "Solve",
                          "Transcription"},
@@ -74,7 +74,7 @@ def safe_span(span):
 
 
 def safe_transaction(event, hint):
-    if event.get("transaction") not in {"CiteTutor tutor", "CiteTutor quiz"}:
+    if event.get("transaction") not in {"CiteTutor tutor", "CiteTutor quiz", "CiteTutor ocr"}:
         return None
     trace = event.get("contexts", {}).get("trace", {})
     cleaned = safe_span({**trace, "description": event["transaction"],

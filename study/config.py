@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     generator_model: str = "gemma3:4b"
     verifier_model: str = "qwen2.5:3b"
     embedding_model: str = "nomic-embed-text"
-    ocr_model: str = "gemma3:4b"
+    ocr_model: str = "glm-ocr:q8_0"
     ocr_timeout: float = Field(default=600, gt=0, le=1800)
     data_dir: Path = Path("data")
     model_context: int = Field(default=4096, ge=4096, le=32768)

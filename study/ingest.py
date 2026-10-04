@@ -149,7 +149,7 @@ def review_document(db, models, document_id, request):
         raise ValueError("Correct [unclear] markers or remove unreadable lines before approval")
     for page in pages:
         if page["page"] in supplied:
-            page.update(text=supplied[page["page"]], reviewed=True, review="human_approved")
+            page.update(text=supplied[page["page"]], reviewed=True, review="approved")
     units = index_units(models, document_id, pages)
     with db.transaction() as session:
         source = db.get(session, "source", document_id)

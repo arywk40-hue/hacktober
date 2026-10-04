@@ -70,7 +70,7 @@ class Models:
         with self.lock:
             self._metadata(role)
             if role == "ocr" and not self.metadata[role]["vision"]:
-                raise ModelError("OCR needs local vision weights. Run: ollama pull gemma3:4b")
+                raise ModelError("OCR needs local vision weights. Pull glm-ocr:q8_0 and set CITETUTOR_OCR_MODEL")
             if role == "verifier":
                 if self._metadata("generator")["family"] == self._metadata("verifier")["family"]:
                     raise ModelError("Verification requires a different model family from generation")
@@ -103,17 +103,30 @@ class Models:
         )
         start = time.monotonic()
         try:
+            dedicated_ocr = self.roles["ocr"].rsplit("/", 1)[-1].split(":", 1)[0] == "glm-ocr"
+            # GLM-OCR is trained for this fixed task prompt and returns Markdown/LaTeX, not chat JSON.
+            body = {
+                "model": self.roles["ocr"], "stream": False, "keep_alive": 0,
+                "options": {"temperature": 0, "num_ctx": self.settings.model_context, "num_predict": 2048},
+                "messages": [{"role": "user", "content": "Text Recognition:" if dedicated_ocr else instruction,
+                              "images": [base64.b64encode(image).decode("ascii")]}],
+            }
+            if not dedicated_ocr:
+                body["format"] = Transcription.model_json_schema()
+            else:
+                # Upstream GLM/Ollama can repeat output after its first Markdown fence.
+                # This is an assisted draft: fences/code and other omissions require page review.
+                body["options"].update(num_ctx=8192, repeat_penalty=1.1,
+                                       stop=["<|user|>", "<|endoftext|>", "```"])
+                body["prompt"] = "Text Recognition:"
+                body["images"] = body.pop("messages")[0]["images"]
             with self.lock:
-                response = self.client.post("api/chat", timeout=self.settings.ocr_timeout, json={
-                    "model": self.roles["ocr"], "stream": False, "keep_alive": 0,
-                    "format": Transcription.model_json_schema(),
-                    "options": {"temperature": 0, "num_ctx": self.settings.model_context, "num_predict": 2048},
-                    "messages": [{"role": "user", "content": instruction,
-                                  "images": [base64.b64encode(image).decode("ascii")]}],
-                })
+                response = self.client.post("api/generate" if dedicated_ocr else "api/chat",
+                                            timeout=self.settings.ocr_timeout, json=body)
             response.raise_for_status()
             data = response.json()
-            if data.get("done_reason") == "length":
+            truncated = data.get("done_reason") == "length"
+            if truncated and not dedicated_ocr:
                 raise StructuredOutputError("OCR output was truncated; enter the missing text during review")
             record(**{"gen_ai.usage.input_tokens": data.get("prompt_eval_count"),
                       "gen_ai.usage.output_tokens": data.get("eval_count")})
@@ -122,7 +135,22 @@ class Models:
                                "input_tokens": data.get("prompt_eval_count", 0),
                                "output_tokens": data.get("eval_count", 0)})
             self.calls[:] = self.calls[-200:]
-            return Transcription.model_validate_json(data["message"]["content"])
+            content = data["response"] if dedicated_ocr else data["message"]["content"]
+            if dedicated_ocr:
+                # Preserve only the first exact repeated block as an explicitly incomplete review draft.
+                # Never interpret, complete or silently approve the recognized writing.
+                repeat_positions = []
+                for offset in range(0, min(1200, max(0, len(content) - 100)), 16):
+                    block = content[offset:offset + 100]
+                    repeated_at = content.find(block, offset + 100)
+                    if len(block.strip()) >= 80 and repeated_at != -1:
+                        repeat_positions.append(repeated_at)
+                repeated = bool(repeat_positions)
+                if repeated:
+                    content = content[:min(repeat_positions)].rstrip()
+                return Transcription(text=content[:12000],
+                                     incomplete=truncated or repeated or len(content) > 12000)
+            return Transcription.model_validate_json(content)
         except httpx.HTTPError as exc:
             raise ModelError("Local page transcription failed; retry or enter text from the image manually") from exc
         except (ValidationError, ValueError, KeyError, TypeError) as exc:
