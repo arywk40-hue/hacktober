@@ -1,80 +1,95 @@
 ---
-title: "CiteTutor: local college study help with answers you can check"
+title: "CiteTutor: a local study tutor that verifies before it answers"
 published: false
 tags: devchallenge, weekendchallenge, hf26challenge, ai
 ---
 
-> Draft for review. This project adapts a pre-existing repository; the official FAQ excludes old projects. Do not present this as a new, eligible entry without resolving that requirement with the organisers. Do not invent a friend testimonial or claim an unrecorded demo.
+> Unpublished draft. CiteTutor adapts pre-existing Course Companion code. The challenge FAQ excludes old projects; resolve eligibility with the organisers before presenting this adaptation as an eligible entry. Resetting history does not change when code was written. The video and exported screenshots remain pending.
 
 ## What I Built
 
-I built CiteTutor to help a friend in college study from their own material. They can create a subject, add several PDF notes or textbook chapters, ask for an explanation or hint, and practise questions from selected pages.
+I asked one college friend to try CiteTutor on a chapter from their own course material. They found it useful, but a little slow.
 
-The question I wanted the app to answer was: can a study helper make its explanations easy to check? Each answer segment links to a document and physical page. Unsupported drafts are rejected. The tutor refuses when it cannot verify a complete answer from the material.
+That is fair feedback. CiteTutor makes them wait while it checks an answer before showing it. Gemma drafts an explanation, code validates its citations, and Qwen independently reads the source and checks the draft. Failed drafts are withheld. After at most three attempts, the tutor either shows a cited answer or says **“Not enough evidence in this document.”** These checks reduce some errors; they do not guarantee correctness.
+
+My friend can organise PDF notes and textbook chapters by subject, ask for an explanation or hint, and practise MCQs or short-answer questions from selected pages. Clicking a citation opens the page text; reviewed scans also show the original image. The practical aim is to make checking a study answer easy.
+
+This is reported friend feedback, not a controlled study or measured learning improvement. Their name, chapter and notes stay private. Speed remains a usability problem to improve.
 
 ## Demo
 
-**Video and real screenshots pending.** The [recording guide](https://github.com/arywk40-hue/hacktober/blob/main/docs/DEMO.md) provides a three-minute shot list, narration and exact prompts. Replace this notice with the actual accessible recording URL before publishing. The guide itself is not the video demo.
+**Recording and exported screenshots pending.** Replace this notice with an accessible video URL and actual captures before publishing. The [three-minute recording guide](https://github.com/arywk40-hue/hacktober/blob/main/docs/DEMO.md) is a shot list, not a finished demo.
 
-Run `./run.sh` and open http://127.0.0.1:8000. A local model server does not require publishing a friend's documents.
+Record one session: upload the original public mechanics fixture, ask the force question, open its citation, show an unrelated question refusing, and generate a verified practice set with its actual accepted/rejected counts. Then compare a public scan with its editable transcription and show real Sentry generation, verification and rejection spans. Label shortened waits with the recorded duration.
 
-Demo walkthrough to record:
-
-1. Create a Physics subject and upload `eval/sample.pdf`.
-2. Ask for the force on a 2 kg body accelerating at 4 m/s²; show the result and click its citation.
-3. Ask an out-of-scope question and show the explicit refusal.
-4. Generate a two-question practice set over pages 1–3; show verification counts, a source answer and its supporting quote.
-5. Show a publicly shareable scan beside its editable GLM-OCR draft; explain review before indexing.
-6. Show actual Sentry Gemma/Qwen spans and token/latency metadata. Include an OCR trace when captured; images and text never go to Sentry in this integration.
-
-**Before publishing:** attach a real screenshot or recording of the final working flow. Add feedback only after the friend has actually tried it.
+After setup, run `./run.sh` and open http://127.0.0.1:8000. [README setup](https://github.com/arywk40-hue/hacktober#setup) includes the model pulls.
 
 ## Code
 
-https://github.com/arywk40-hue/hacktober
+[CiteTutor repository](https://github.com/arywk40-hue/hacktober)
 
-This repo starts with a current snapshot of the CiteTutor adaptation. Its earlier Course Companion code predates the weekend window. The previous commit history is backed up separately; the actual development steps, earlier commit IDs and failures remain recorded in `BUILD_LOG.md`.
+The earlier Course Companion implementation predates the weekend window. The previous history is backed up; earlier revisions and subsequent adaptation remain documented in [BUILD_LOG.md](https://github.com/arywk40-hue/hacktober/blob/main/BUILD_LOG.md).
 
 ## How I Built It
 
-FastAPI serves a minimal HTML/JavaScript interface. PyMuPDF extracts selectable page text and renders scans. GLM-OCR drafts handwritten-page text locally; each scan must be checked against its image before the document is indexed. SQLite stores documents, chunks, embeddings and local verifier audits. Keyword ranking and dense cosine search are fused to retrieve source evidence.
+FastAPI serves a small HTML/JavaScript interface. PyMuPDF extracts text per physical page. Local nomic embeddings and keyword ranking retrieve chunks stored in SQLite. There is no database server, queue or cloud inference fallback.
 
-Gemma creates a structured draft. Short source aliases map exactly to stored chunk IDs. Unknown citations fail before verification. Qwen first answers the question blindly from the cited evidence, then checks the draft's support and agreement with that reading. The small generator is constrained to one paragraph and one supporting chunk to avoid adding unrequested facts. The app tries at most three drafts and displays only a complete pass.
+**Retrieve → Gemma structured draft → citation/source checks → Qwen blind reading → support and agreement check → cited answer or refusal.**
 
-Quiz generation is a separate pipeline: validate the question schema and literal quotes, independently retrieve relevant text, then ask Qwen to solve the question without its proposed answer or rationale. A separate step checks the key against the blind answer and source evidence. Rejected candidates never appear in the practice set; their counts and reasons do.
+Gemma supplies source aliases, which code resolves to stored chunks and authoritative page numbers. Unknown or missing citations fail. Qwen's blind reading sees the question and evidence, without Gemma's draft or learner style. Another step checks the draft against that reading and the source. Nothing is streamed before verification. Small laptop models currently receive a concise, one-paragraph/one-chunk task.
 
-The first live test was poor: a preliminary evidence classifier refused every supported question. We retained that baseline, removed the false-negative gate, and made post-draft verification the acceptance step. A smaller verifier also confused claims in a batch check. Gemma 1B later omitted numerical values and struggled with quiz schemas. The final defaults are Gemma 4B and Qwen 3B, run serially with immediate unloading on the 8 GB laptop. Type-specific question schemas help generation; blind verification still decides acceptance.
+Quiz candidates have their own checks: schema, source IDs and literal supporting quotes, independently retrieved evidence, then a blind Qwen solve without the proposed key or rationale. Unsupported or disagreeing candidates are dropped; the UI shows rejected counts. Disagreement does not establish which model was wrong.
 
-The revised ten-question local evaluation answered all seven supported questions correctly, each with its expected page citation, and refused all three out-of-scope questions. The mixed quiz accepted one short-answer question and rejected one MCQ because the blind solver disagreed with its key. The accepted key and source quote were compared with the fixture. This is a small authored-PDF smoke check, not a broad accuracy claim. The earlier run answered only four of seven supported questions; those three false refusals and other failures remain recorded in the build log and reports. Runtime and prompts changed too, so the runs do not isolate a single improvement.
+### What the real models did
 
-On the 8 GB M1 laptop, the revised run's returned tutor answers had a median latency of about 44.5 seconds. The complete ten-question run and quiz took about eight minutes. See `eval/RESULTS.md` and `eval/reports/blind-reading.json`. The fixture is small; its results do not establish accuracy across college material. Verification can miss mistakes, so source inspection remains part of the study flow.
+The revised evaluation on an 8 GB M1 used an original three-page mechanics PDF:
 
-Handwritten notes exposed another failure mode: Gemma returned only three labels from a full handwritten page, and Qwen-VL stalled on the 8 GB laptop. A smaller local GLM-OCR model ran faster, but initially repeated its output. We retained those failures and added the native endpoint/stop workaround with visible partial-draft warnings. Names, subscripts and infinity symbols still needed correction. The study verifier checks approved text, so it cannot repair an OCR mistake hidden in that text. Page images and mandatory review make that limitation visible; this is assisted transcription, not automatic handwriting accuracy.
+| Check | Result from this run |
+|---|---|
+| Supported questions answered correctly | 7 / 7 |
+| Expected document/page citations | 7 / 7 |
+| Unrelated questions refused | 3 / 3 |
+| Quiz candidates | 1 accepted, 1 rejected |
+| Returned tutor latency | Median 44.5 seconds |
 
-Testing visually corrected notes also exposed an accepted but irrelevant tutor answer: it described array initialization instead of what a cell stores. Adding independent blind source reading addressed that case in a focused retest: two supported questions returned the expected page citations, and an unrelated question refused. Two quiz candidates passed blind verification with zero rejected. These small checks are separate from the earlier ten-question result. A public glassboard photo returned four visually matching text/formula items; diagram interpretation was not tested. See `eval/SCAN_RESULTS.md` for timings, errors and photo attribution. Private college notes and their complete transcriptions are not published.
+The rejected MCQ disagreed with the blind solver; the accepted short answer and quote matched the fixture. This is a **small smoke check**, not general accuracy across college PDFs. Earlier runs falsely refused supported questions. A handwriting test accepted an irrelevant answer before blind tutor reading was added. These failures remain in [evaluation results](https://github.com/arywk40-hue/hacktober/blob/main/eval/RESULTS.md) and [scan observations](https://github.com/arywk40-hue/hacktober/blob/main/eval/SCAN_RESULTS.md).
+
+### Handwriting needs review
+
+Full-page Gemma transcription was incomplete on handwritten lecture notes; Qwen-VL stalled. Dedicated local GLM-OCR produced more useful drafts, but misread dimensions, subscripts, an array name and infinity symbols. Repeated or truncated output is labelled partial.
+
+Scans stay outside retrieval until every scanned page is reviewed against its image. Blank reviewed pages are excluded. The verifier checks approved text, so it cannot fix an OCR error hidden in that text. This is assisted transcription with human review.
 
 ## Why Does Open Innovation Matter?
 
-The open components perform the central work: local embeddings find relevant material, Gemma produces explanations, and another model checks them. After setup, documents and questions stay on the laptop and inference needs no internet or paid API tokens. The UI has no external assets. Optional Sentry tracing is off by default; when enabled, sanitized timing/token/count metadata leaves the laptop while document and model content stays local.
+The open components do the central work: nomic retrieves, Gemma drafts, Qwen checks, and GLM-OCR reads scans. After dependencies and weights are installed, the core uses the laptop and local Ollama, with no hosted-model fallback or per-request AI API charges.
 
-The models can be swapped and the verification policy can be inspected and changed. That makes the tool easier to adapt to a friend's hardware and study needs. Hardware and electricity still have costs; each model's licence applies.
+My friend's notes, questions and answers stay local. Optional Sentry tracing sends sanitized timing, token and outcome metadata; leave its DSN blank for fully local operation. Physical network-disconnection testing remains pending.
+
+Model roles are configurable and source checks are inspectable. We can change models for different hardware without handing the study policy to a provider. Model-specific licences apply; hardware and electricity still cost money. The current trade-off is visible: private local generation and verification take time.
 
 ## Prize Categories
 
-**Best Use of Gemma** is the technology category target, conditional on the entry meeting the challenge's eligibility requirements. The [weekend category rules](https://dev.to/challenges/hacktoberfest-weekend-2026-10-01) explicitly include local Gemma inference.
+These are technology targets, conditional on resolving the adaptation's eligibility.
 
-CiteTutor runs `gemma3:4b` through local Ollama for both central generation tasks: structured explanations grounded in retrieved PDF chunks, and MCQ/short-answer quiz candidates with source IDs and supporting quotes. Gemma supplies the answer and question drafts; Qwen, from a different model family, independently decides whether they pass. That separation lets us inspect and reject unreliable output while keeping document processing on the laptop.
+### Best Use of Gemma
 
-Evidence of the integration is in `study/tutor.py`, `study/assessment.py`, the model roles returned by `/api/health`, and the actual Gemma calls recorded in `eval/reports/blind-reading.json`. The demo should show the installed model tag, one cited answer, and a quiz's verified count and source quote. Historical false refusals and measured latency remain disclosed in the evaluation section above.
+Local `gemma3:4b` supplies both core generation tasks: structured tutor explanations and MCQ/short-answer candidates. Qwen independently verifies, nomic embeds, and GLM-OCR reads images. Gemma's role is visible in `/api/health`, the evaluation's real model calls and the live tutor trace.
 
-**Sentry Agent Tracing — live integration verified.** Manual AI spans expose the tutor and quiz pipelines, local model latency/token usage, retry/refusal outcomes, and fixed rejection codes. The SDK's automatic integrations are disabled; transactions and envelopes pass an allowlist that excludes all note/model content and attachments. Tests cover three rejected tutor drafts, quiz key disagreement, privacy and failed network transport. The sample trace command uses real local models and can also capture SDK envelopes locally without sending telemetry. See `docs/SENTRY.md` for setup.
+### Best Use of Sentry Agent Tracing
 
-Live metadata delivery returned HTTP 200, and the real Gemma/Qwen trace was inspected in Sentry’s Agents view. The verified sample answer has one citation and passed on its first attempt. Its trace (`66ca5eb26d1a46708f0497e55d9757ff`) shows retrieval, embeddings, Gemma generation and Qwen verification; no model input text is present. The sanitized payload/delivery record is in `eval/traces/live-delivery.json`. Save and include the real trace screenshot with this post before publishing. Entire and ElevenLabs are not integrated. Prize selection depends on a valid entry and judging; these integrations do not guarantee an award.
+Live traces were inspected in Sentry's Traces and Agents views:
 
-The scan integration also has confirmed live evidence: GLM-OCR trace `9dd839e0c7304be8b77640221506af80` appeared in Traces and Agents after reading a public glassboard photo locally. Its model span shows 59.07 seconds, 4,072 input and 87 output tokens, and **No input for this span**. Only allowed metadata was sent; the image was neither indexed nor uploaded to Sentry. Its verified metadata is in `eval/traces/ocr-live.json`; include the real captured screenshot in the post. Photo credit: [Learning Physics](https://commons.wikimedia.org/wiki/File:Learning_Physics.jpg), Preply.com Images / preply.com, [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/).
+| Actual trace | What it showed |
+|---|---|
+| Supported tutor request | Passed on attempt one in 45.73 s: Gemma draft 24.84 s, Qwen blind reading 9.68 s, support check 10.80 s. |
+| Refused request | 1.66 min, three rejected drafts. The first rejection was `unsupported_quantity`, before Qwen was called. |
+| Public glassboard image | Local GLM-OCR model call 59.07 s, 4,072 input / 87 output tokens; no image or transcription in Sentry. |
 
-Current tutor traces now show the revised pipeline as well. A supported sample request passed on attempt one in 45.73 seconds: Gemma NumericalDraft (24.84 seconds, 1,215 input / 79 output tokens), Qwen blind Solve (9.68 seconds), then support checking (10.80 seconds). A separate outside-worked-evidence request took 1.66 minutes and refused after three rejected drafts; the first rejection code was `unsupported_quantity`. This rejection occurred at the source guard before Qwen. These live traces and their captured screenshots show how generation time accumulates across retries and where the evidence boundary acts. Verified metadata: `eval/traces/current-tutor-live.json`. Export/save the actual screenshots and video before publishing.
+The useful finding is where time accumulates: generation dominates the accepted request, and retries make a refusal slower. Source-guard failures and verifier failures are separate stages. This explains the wait; tracing itself did not improve accuracy or speed.
 
-The real-model local trace preview (`eval/traces/local-preview.json`) caught three `unsupported_quantity` drafts before refusal: a requested result was absent from the cited source. The guard rejected them before Qwen was called. The span metadata shows the cost of retrying on this laptop: that refusal took 465 seconds, compared with 141 seconds for the supported answer on its first attempt. The two-question quiz took 299 seconds, accepted both candidates, and shows separate blind-solve and support-verdict calls. This is local SDK instrumentation evidence, not a live Sentry dashboard capture or a benchmark of tracing overhead.
+The outgoing allowlist excludes documents, images, questions, answers, filenames and model input text. The inspected AI span showed **No input for this span**. Sentry observes the pipeline; it does not recognise images or verify facts. Its estimated API costs do not measure local hardware costs.
 
-The fresh live trace took 251.61 seconds: Gemma 227.15 seconds (1,049 input / 77 output tokens), Qwen 23.74 seconds (469 / 27), and embeddings about 0.46 seconds (13 input tokens). An earlier live attempt returned a local-model 503 after about four minutes. The successful focused check used a 600-second local-call timeout and 256-token output cap in a temporary library; production defaults remain 240 seconds and 1,000 tokens. These observations show generation latency and reliability limits, not an improvement caused by Sentry. Sentry’s automatically estimated costs do not measure local hardware/electricity costs.
+Include actual saved screenshots with this post. Verified metadata and trace IDs are in [current tutor traces](https://github.com/arywk40-hue/hacktober/blob/main/eval/traces/current-tutor-live.json) and [OCR trace](https://github.com/arywk40-hue/hacktober/blob/main/eval/traces/ocr-live.json); [Sentry setup](https://github.com/arywk40-hue/hacktober/blob/main/docs/SENTRY.md) explains reproduction and privacy. Historical slower runs remain archived.
+
+Public photo credit: [Learning Physics](https://commons.wikimedia.org/wiki/File:Learning_Physics.jpg), Preply.com Images / preply.com, [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/). Private lecture notes are not published.
